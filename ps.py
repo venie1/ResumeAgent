@@ -8,8 +8,6 @@ from typing import Dict, List, Optional
 from collections import Counter
 import openai
 import os
-from dotenv import load_dotenv
-load_dotenv()
 class ProjectShowcase:
     """Enhanced project showcase with visual elements for recruiters"""
     @staticmethod
@@ -62,7 +60,7 @@ class ChatbotConfig:
         self.max_tokens = 300
         self.temperature = 0.5
         self.use_fallback = True
-        self.openai_api_key = os.getenv("OPENAI_API_KEY")
+        self.openai_api_key = st.secrets["OPENAI_API_KEY"]
         self.enable_openai = True
 
 class IntelligentResponseSystem:
