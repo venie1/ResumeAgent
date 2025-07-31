@@ -1189,10 +1189,11 @@ def main():
     </div>
     """, unsafe_allow_html=True)
 
-    # Initialize chatbot
+    # Initialize chatbot and active tab
     if 'chatbot' not in st.session_state:
         st.session_state.chatbot = ResumeAssistantChatbot()
         st.session_state.messages = []
+        st.session_state.active_tab = 0  # Default to AI Assistant tab
     
     # Enhanced Sidebar with navigation functionality
     with st.sidebar:
@@ -1209,6 +1210,8 @@ def main():
                 response = st.session_state.chatbot.get_section_response(section)
                 st.session_state.messages.append({"role": "user", "content": menu_text})
                 st.session_state.messages.append({"role": "assistant", "content": response})
+                # Switch to AI Assistant tab (first tab)
+                st.session_state.active_tab = 0
                 st.rerun() 
         
         st.markdown("---")
@@ -1232,8 +1235,8 @@ def main():
         st.metric("ML Model Accuracy", "90%", "+15% vs baseline")
         st.metric("Research Projects", "4", "Including Sandia Labs")
     
-    # Enhanced tab structure
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    # Enhanced tab structure with dynamic active tab
+    tab_labels = [
         "💬 AI Assistant", 
         "🎓 Georgia Tech Excellence",
         "🏭 Sandia Labs Research", 
@@ -1241,9 +1244,21 @@ def main():
         "⚽ BetMax Analytics",
         "🚀 Project Portfolio",
         "📊 Skills & Performance"
-    ])
+    ]
     
-    with tab1:
+    # Create tabs and get the selected one
+    selected_tab = st.tabs(tab_labels)
+    
+    # Override tab selection if sidebar button was clicked
+    if 'active_tab' in st.session_state and st.session_state.active_tab == 0:
+        # Display a visual indicator that user should click on AI Assistant tab
+        if st.session_state.messages and len(st.session_state.messages) >= 2:
+            latest_message = st.session_state.messages[-1]
+            if latest_message["role"] == "assistant":
+                st.info("💬 **New response added to AI Assistant chat!** Click the 'AI Assistant' tab above to see the answer.", icon="🎯")
+    
+    # Tab 1: AI Assistant
+    with selected_tab[0]:
         # Enhanced AI chat interface with professional recruiter note
         st.markdown("""
         <div class="tab-content">
@@ -1285,7 +1300,8 @@ def main():
                     st.markdown(response)
                     st.session_state.messages.append({"role": "assistant", "content": response})
     
-    with tab2:
+    # Tab 2: Georgia Tech Excellence  
+    with selected_tab[1]:
         # Enhanced Georgia Tech tab
         st.markdown('<div class="tab-content">', unsafe_allow_html=True)
         GeorgaTechShowcase.display_program_showcase()
@@ -1319,7 +1335,8 @@ def main():
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    with tab3:
+    # Tab 3: Sandia Labs Research
+    with selected_tab[2]:
         # Enhanced Sandia Labs Research tab
         st.markdown("""
         <div class="tab-content">
@@ -1397,7 +1414,8 @@ def main():
             • Cost-benefit analysis and ROI projections
             """)
     
-    with tab4:
+    # Tab 4: Real Estate Advisor
+    with selected_tab[3]:
         # Real Estate Advisor dedicated section
         st.markdown("""
         <div class="tab-content">
@@ -1491,7 +1509,8 @@ def main():
             with col2c:
                 st.metric("Portfolio Uplift", "12-15%", "backtesting ROI")
     
-    with tab5:
+    # Tab 5: BetMax Analytics
+    with selected_tab[4]:
         # Enhanced BetMax Sports Analytics section
         st.markdown("""
         <div class="tab-content">
