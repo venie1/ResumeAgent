@@ -1383,7 +1383,7 @@ def main():
         st.session_state.scroll_trigger = 0
     
     # Enhanced Sidebar with direct question functionality
-     with st.sidebar:
+    with st.sidebar:
         st.markdown("""
         <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #1976d2, #2196f3); color: white; border-radius: 10px; margin-bottom: 1rem;">
             <h3 style="margin: 0;">🎯 Quick Questions</h3>
