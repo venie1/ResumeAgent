@@ -1443,7 +1443,7 @@ def main():
     </div>
     """, unsafe_allow_html=True)
 
-    # Initialize chatbot
+    # Initialize chatbot with scroll trigger
     if 'chatbot' not in st.session_state:
         st.session_state.chatbot = ResumeAssistantChatbot()
         st.session_state.messages = []
@@ -1458,7 +1458,7 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         
-        # FIXED: Quick question prompts with unique keys
+        # FIXED: Quick question prompts with unique keys and scroll trigger
         quick_questions = {
             "👤 Professional Summary": "Tell me about Petros's professional background and overall qualifications",
             "🎓 Academic Excellence": "What are Petros's educational achievements and academic performance?",
@@ -1470,13 +1470,15 @@ def main():
         }
         
         for i, (button_text, question) in enumerate(quick_questions.items()):
-            # FIXED: Use unique key with timestamp
-            unique_key = f"sidebar_q_{i}_{int(time.time()*1000) % 10000}"
+            # FIXED: Use hash for unique key
+            unique_key = f"sidebar_q_{hash(button_text) % 10000}_{i}"
             if st.button(button_text, key=unique_key, use_container_width=True):
                 # Add question and response to chat
                 st.session_state.messages.append({"role": "user", "content": question})
                 response = st.session_state.chatbot.get_response(question)
                 st.session_state.messages.append({"role": "assistant", "content": response})
+                # Set scroll trigger
+                st.session_state.scroll_trigger = time.time()
                 st.rerun()
         
         st.markdown("---")
@@ -1533,14 +1535,14 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         
-        # FIXED: Quick prompts section with unique keys
+        # FIXED: Quick prompts section with unique keys and scroll trigger
         st.markdown("""
         <div class="quick-prompt-section">
             <h3 class="quick-prompt-title">💡 Suggested Questions for Recruiters</h3>
         </div>
         """, unsafe_allow_html=True)
         
-        # FIXED: Create suggested prompts with unique keys
+        # FIXED: Create suggested prompts with unique keys and scroll trigger
         suggested_prompts = [
             "Tell me about his predictive modeling achievements",
             "What advanced ML algorithms does he specialize in?",
@@ -1556,18 +1558,20 @@ def main():
             "What's his Python/R/SQL proficiency level?"
         ]
         
-        # FIXED: Create columns for the prompts with unique keys
+        # FIXED: Create columns for the prompts with unique keys and scroll trigger
         cols = st.columns(3)
         for i, prompt in enumerate(suggested_prompts):
             col_idx = i % 3
             with cols[col_idx]:
-                # FIXED: Use unique key with timestamp
-                unique_key = f"suggest_{i}_{int(time.time()*1000) % 10000}"
+                # FIXED: Use hash for unique key
+                unique_key = f"suggest_{hash(prompt) % 10000}_{i}"
                 if st.button(prompt, key=unique_key, use_container_width=True):
                     # Add to chat when clicked
                     st.session_state.messages.append({"role": "user", "content": prompt})
                     response = st.session_state.chatbot.get_response(prompt)
                     st.session_state.messages.append({"role": "assistant", "content": response})
+                    # Set scroll trigger
+                    st.session_state.scroll_trigger = time.time()
                     st.rerun()
         
         # Display chat messages FIRST
@@ -1576,8 +1580,9 @@ def main():
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"])
             
-            # CRITICAL: Auto-scroll AFTER displaying all messages
-            force_scroll_to_bottom()
+            # CRITICAL: Auto-scroll AFTER displaying all messages OR when scroll trigger is set
+            if st.session_state.messages or st.session_state.get('scroll_trigger', 0) > 0:
+                force_scroll_to_bottom()
         
         # FIXED: Chat input AFTER messages
         if prompt := st.chat_input("💬 Inquire about technical expertise, quantifiable results, or specific project achievements..."):
@@ -1589,10 +1594,9 @@ def main():
                 response = st.session_state.chatbot.get_response(prompt)
                 st.session_state.messages.append({"role": "assistant", "content": response})
             
-            # Rerun to show new messages and trigger auto-scroll
+            # Set scroll trigger and rerun
+            st.session_state.scroll_trigger = time.time()
             st.rerun()
-    
-    # Continue with other tabs...
     with tab2:
         # Enhanced Georgia Tech tab
         st.markdown('<div class="tab-content">', unsafe_allow_html=True)
