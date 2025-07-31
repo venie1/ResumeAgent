@@ -1471,7 +1471,7 @@ def main():
                     st.markdown(message["content"])
             
             # IMPORTANT: Auto-scroll AFTER displaying messages
-            force_scroll_to_bottom()
+            scroll_to_bottom()
         
         # Chat input
         if prompt := st.chat_input("💬 Ask about technical expertise..."):
