@@ -751,46 +751,15 @@ Petros is exceptionally well-qualified for this data science role!
         return self.intelligent_response.get_section_response(section)
 # Add this function at the top after imports
 def scroll_to_bottom():
-    """JavaScript to scroll to bottom of chat using st.empty and rerun"""
-    js_code = f"""
+    """Simple auto-scroll using HTML and JavaScript"""
+    scroll_script = """
     <script>
-    function scrollToBottom() {{
-        setTimeout(function() {{
-            // Scroll to the very bottom of the page
-            window.scrollTo({{ top: document.body.scrollHeight, behavior: 'smooth' }});
-            
-            // Also try to find chat messages container and scroll it
-            const chatMessages = document.querySelector('[data-testid="stChatMessage"]');
-            if (chatMessages) {{
-                chatMessages.scrollIntoView({{ behavior: 'smooth', block: 'end' }});
-            }}
-            
-            // Alternative: scroll to the chat input
-            const chatInput = document.querySelector('[data-testid="stChatInput"]');
-            if (chatInput) {{
-                chatInput.scrollIntoView({{ behavior: 'smooth', block: 'center' }});
-            }}
-        }}, 500);
-    }}
-    
-    // Call the function
-    scrollToBottom();
-    
-    // Also set up observer for new messages
-    const observer = new MutationObserver(function(mutations) {{
-        mutations.forEach(function(mutation) {{
-            if (mutation.addedNodes.length > 0) {{
-                scrollToBottom();
-            }}
-        }});
-    }});
-    
-    // Start observing
-    const targetNode = document.body;
-    observer.observe(targetNode, {{ childList: true, subtree: true }});
+    setTimeout(function() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }, 100);
     </script>
     """
-    st.components.v1.html(js_code, height=0)
+    st.components.v1.html(scroll_script, height=0)
 class ResumeData:
     """Enhanced Resume Data with comprehensive information"""
     
