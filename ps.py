@@ -971,7 +971,7 @@ def main():
         initial_sidebar_state="expanded"
     )
     
-    # Enhanced CSS with modern design
+    # Enhanced CSS with modern design and chat highlighting
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -985,6 +985,51 @@ def main():
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Inter', 'Roboto', Arial, sans-serif;
         font-weight: 600;
+    }
+
+    /* Enhanced chat visibility styling */
+    .chat-container {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 3px solid #1976d2;
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 1rem 0;
+        box-shadow: 0 8px 32px rgba(25, 118, 210, 0.2);
+        position: relative;
+        animation: pulse-border 2s infinite;
+    }
+    
+    @keyframes pulse-border {
+        0%, 100% { border-color: #1976d2; box-shadow: 0 8px 32px rgba(25, 118, 210, 0.2); }
+        50% { border-color: #2196f3; box-shadow: 0 12px 40px rgba(33, 150, 243, 0.3); }
+    }
+    
+    .chat-header {
+        background: linear-gradient(135deg, #1976d2 0%, #2196f3 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(25, 118, 210, 0.3);
+        animation: glow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow {
+        from { box-shadow: 0 4px 20px rgba(25, 118, 210, 0.3); }
+        to { box-shadow: 0 8px 30px rgba(25, 118, 210, 0.5); }
+    }
+    
+    .chat-input-highlight {
+        border: 2px solid #1976d2 !important;
+        border-radius: 15px !important;
+        box-shadow: 0 4px 20px rgba(25, 118, 210, 0.2) !important;
+        animation: input-glow 2s infinite;
+    }
+    
+    @keyframes input-glow {
+        0%, 100% { box-shadow: 0 4px 20px rgba(25, 118, 210, 0.2); }
+        50% { box-shadow: 0 6px 25px rgba(25, 118, 210, 0.4); }
     }
 
     .project-card {
@@ -1148,20 +1193,25 @@ def main():
     if 'chatbot' not in st.session_state:
         st.session_state.chatbot = ResumeAssistantChatbot()
         st.session_state.messages = []
+        st.session_state.active_tab = 0  # Track active tab
     
-    # Enhanced Sidebar
+    # Enhanced Sidebar with navigation functionality
     with st.sidebar:
         st.markdown("""
         <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #1976d2, #2196f3); color: white; border-radius: 10px; margin-bottom: 1rem;">
-            <h3 style="margin: 0;">🎯 Navigation</h3>
+            <h3 style="margin: 0;">🎯 Quick Navigation</h3>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Click to ask in chat ↓</p>
         </div>
         """, unsafe_allow_html=True)
         
         for menu_text, section in st.session_state.chatbot.main_menu.items():
             if st.button(menu_text, key=f"menu_{section}", use_container_width=True):
+                # Generate response and add to chat
                 response = st.session_state.chatbot.get_section_response(section)
                 st.session_state.messages.append({"role": "user", "content": menu_text})
                 st.session_state.messages.append({"role": "assistant", "content": response})
+                # Set active tab to chat
+                st.session_state.active_tab = 0
                 st.rerun() 
         
         st.markdown("---")
@@ -1185,7 +1235,7 @@ def main():
         st.metric("ML Model Accuracy", "90%", "+15% vs baseline")
         st.metric("Research Projects", "4", "Including Sandia Labs")
     
-    # Enhanced tab structure with Real Estate Advisor tab
+    # Enhanced tab structure with active tab tracking
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
         "💬 AI Assistant", 
         "🎓 Georgia Tech Excellence",
@@ -1197,25 +1247,27 @@ def main():
     ])
     
     with tab1:
-        # Enhanced AI chat interface with professional recruiter note
+        # Enhanced AI chat interface with maximum visibility
         st.markdown("""
-        <div class="tab-content">
-            <h2 style="color: #1976d2;">💬 AI-Powered Resume Assistant</h2>
-            <p style="font-size: 1.1rem; color: #666; margin-bottom: 1rem; line-height: 1.5;">
-                Discover Petros's Data Science expertise, quantifiable achievements, technical competencies, and project outcomes. 
-                Receive detailed, recruiter-focused insights with specific performance metrics and demonstrated business impact.
-            </p>
-            <div style="background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%); 
-                        border-left: 4px solid #1976d2; 
-                        padding: 1.2rem; 
-                        border-radius: 10px; 
-                        margin-bottom: 1.5rem;
-                        box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);">
-                <p style="margin: 0; color: #1565c0; font-weight: 500; font-size: 0.95rem; line-height: 1.4;">
-                    📋 <strong>Note for Recruiters:</strong> This intelligent assistant is optimized for
-                    evaluating my CV. For optimal performance and token efficiency, please formulate concise, 
-                    targeted questions. Additional details are available through the structured navigation tabs above or the fast questions left. Please use them for navigation and keep the chat concise.
-                    Agent might be mistaken some times, for validation reflect the CV information and the tabs.
+        <div class="chat-container">
+            <div class="chat-header">
+                <h1 style="margin: 0; font-size: 2rem;">💬 Interactive CV Assistant</h1>
+                <h3 style="margin: 0.5rem 0 0 0; font-weight: 400;">Ask about technical skills, projects, experience, or achievements</h3>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); 
+                        border: 2px solid #0ea5e9; 
+                        padding: 1.5rem; 
+                        border-radius: 15px; 
+                        margin-bottom: 2rem;
+                        box-shadow: 0 4px 20px rgba(14, 165, 233, 0.1);">
+                <h4 style="margin: 0 0 0.5rem 0; color: #0369a1; font-size: 1.1rem;">
+                    🚀 Start Your Conversation Below!
+                </h4>
+                <p style="margin: 0; color: #0c4a6e; font-size: 1rem; line-height: 1.4;">
+                    • Use the <strong>sidebar buttons</strong> for quick navigation<br/>
+                    • Type specific questions about skills, projects, or experience<br/>
+                    • Explore technical achievements and quantifiable results
                 </p>
             </div>
         </div>
@@ -1226,8 +1278,15 @@ def main():
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
         
-        # Enhanced chat input with professional placeholder
-        if prompt := st.chat_input("💭 Inquire about technical expertise, quantifiable results, or specific project achievements..."):
+        # Enhanced chat input with professional placeholder and highlighting
+        st.markdown("""
+        <div style="margin: 2rem 0 1rem 0; padding: 1rem; background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); 
+                    border-radius: 15px; border: 2px solid #f59e0b; text-align: center;">
+            <h4 style="margin: 0; color: #92400e;">💭 Ask Your Question Below ↓</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if prompt := st.chat_input("💭 Ask about technical expertise, project results, skills, experience, or achievements..."):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
                 st.markdown(prompt)
@@ -1237,13 +1296,6 @@ def main():
                     response = st.session_state.chatbot.get_response(prompt)
                     st.markdown(response)
                     st.session_state.messages.append({"role": "assistant", "content": response})
-        
-        # Enhanced welcome message for recruiters
-        if not st.session_state.messages:
-            with st.chat_message("assistant"):
-                welcome = st.session_state.chatbot.intelligent_response.get_welcome_response()
-                st.markdown(welcome)
-                st.session_state.messages.append({"role": "assistant", "content": welcome})
 
     
     with tab2:
@@ -1629,7 +1681,6 @@ def main():
                 """, unsafe_allow_html=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
-
 # Run the application
 if __name__ == "__main__":
     main()
