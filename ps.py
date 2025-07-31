@@ -12,56 +12,106 @@ import time
 import uuid
 import streamlit.components.v1 as components
 def force_scroll_to_bottom():
-    """Alternative scroll method using parent window"""
+    """Enhanced scroll method with multiple fallbacks and better timing"""
     js_code = """
     <script>
-    // Multiple scroll attempts with different methods
     function scrollDown() {
-        // Method 1: Direct scroll to bottom
-        window.parent.scrollTo(0, window.parent.document.body.scrollHeight);
-        
-        // Method 2: Scroll document element
-        window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
-        
-        // Method 3: Find and scroll to chat input
-        const chatInput = window.parent.document.querySelector('[data-testid="stChatInput"]');
-        if (chatInput) {
-            chatInput.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-        
-        // Method 4: Find and scroll to last chat message
-        const chatMessages = window.parent.document.querySelectorAll('[data-testid="stChatMessage"]');
-        if (chatMessages.length > 0) {
-            const lastMessage = chatMessages[chatMessages.length - 1];
-            lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        try {
+            // Method 1: Scroll to absolute bottom
+            window.parent.scrollTo({
+                top: window.parent.document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+            
+            // Method 2: Alternative scroll approach
+            window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
+            
+            // Method 3: Find chat section and scroll to it
+            const chatSection = window.parent.document.getElementById('chat-section');
+            if (chatSection) {
+                chatSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            // Method 4: Find chat input and scroll to it
+            const chatInput = window.parent.document.querySelector('[data-testid="stChatInput"]');
+            if (chatInput) {
+                chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            // Method 5: Find last chat message and scroll to it
+            const chatMessages = window.parent.document.querySelectorAll('[data-testid="stChatMessage"]');
+            if (chatMessages.length > 0) {
+                const lastMessage = chatMessages[chatMessages.length - 1];
+                lastMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            // Method 6: Force scroll to very bottom after delay
+            setTimeout(() => {
+                window.parent.scrollTo({
+                    top: window.parent.document.body.scrollHeight + 1000,
+                    behavior: 'smooth'
+                });
+            }, 100);
+            
+        } catch (error) {
+            console.log("Scroll error:", error);
+            // Fallback: Simple scroll to bottom
+            window.parent.scrollTo(0, 999999);
         }
     }
     
-    // Execute immediately and with delays
+    // Execute multiple times with increasing delays
     scrollDown();
-    setTimeout(scrollDown, 100);
+    setTimeout(scrollDown, 50);
+    setTimeout(scrollDown, 150);
     setTimeout(scrollDown, 300);
-    setTimeout(scrollDown, 600);
-    setTimeout(scrollDown, 1000);
+    setTimeout(scrollDown, 500);
+    setTimeout(scrollDown, 800);
+    setTimeout(scrollDown, 1200);
+    setTimeout(scrollDown, 2000);
     </script>
     """
     components.html(js_code, height=0)
+
 def scroll_to_bottom():
-    """Working auto-scroll for Streamlit using components.html"""
+    """Enhanced scroll to bottom with better targeting"""
     components.html(
         """
         <script>
-        function scrollToBottom() {
-            window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
+        function performScroll() {
+            try {
+                // Get the current scroll height
+                const maxScroll = Math.max(
+                    window.parent.document.body.scrollHeight,
+                    window.parent.document.body.offsetHeight,
+                    window.parent.document.documentElement.clientHeight,
+                    window.parent.document.documentElement.scrollHeight,
+                    window.parent.document.documentElement.offsetHeight
+                );
+                
+                // Smooth scroll to bottom
+                window.parent.scrollTo({
+                    top: maxScroll + 200,
+                    behavior: 'smooth'
+                });
+                
+                // Also try direct assignment as fallback
+                setTimeout(() => {
+                    window.parent.document.documentElement.scrollTop = maxScroll + 200;
+                }, 200);
+                
+            } catch (e) {
+                // Final fallback
+                window.parent.scrollTo(0, 999999);
+            }
         }
         
-        // Immediate scroll
-        scrollToBottom();
-        
-        // Also scroll after a short delay to ensure content is loaded
-        setTimeout(scrollToBottom, 100);
-        setTimeout(scrollToBottom, 300);
-        setTimeout(scrollToBottom, 500);
+        // Execute immediately and with delays
+        performScroll();
+        setTimeout(performScroll, 100);
+        setTimeout(performScroll, 300);
+        setTimeout(performScroll, 600);
+        setTimeout(performScroll, 1000);
         </script>
         """,
         height=0,
@@ -1019,70 +1069,8 @@ class ResumeData:
             ]
         }
 
-# Add these imports at the top of your file
-import streamlit.components.v1 as components
-import time
-import uuid
 
-# COMPLETE SCROLL FUNCTIONS - Replace existing scroll functions
-def scroll_to_bottom():
-    """Working auto-scroll for Streamlit using components.html"""
-    components.html(
-        """
-        <script>
-        function scrollToBottom() {
-            window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
-        }
-        
-        // Immediate scroll
-        scrollToBottom();
-        
-        // Also scroll after a short delay to ensure content is loaded
-        setTimeout(scrollToBottom, 100);
-        setTimeout(scrollToBottom, 300);
-        setTimeout(scrollToBottom, 500);
-        </script>
-        """,
-        height=0,
-    )
 
-def force_scroll_to_bottom():
-    """Alternative scroll method using parent window"""
-    js_code = """
-    <script>
-    // Multiple scroll attempts with different methods
-    function scrollDown() {
-        // Method 1: Direct scroll to bottom
-        window.parent.scrollTo(0, window.parent.document.body.scrollHeight);
-        
-        // Method 2: Scroll document element
-        window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
-        
-        // Method 3: Find and scroll to chat input
-        const chatInput = window.parent.document.querySelector('[data-testid="stChatInput"]');
-        if (chatInput) {
-            chatInput.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-        
-        // Method 4: Find and scroll to last chat message
-        const chatMessages = window.parent.document.querySelectorAll('[data-testid="stChatMessage"]');
-        if (chatMessages.length > 0) {
-            const lastMessage = chatMessages[chatMessages.length - 1];
-            lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-    }
-    
-    // Execute immediately and with delays
-    scrollDown();
-    setTimeout(scrollDown, 100);
-    setTimeout(scrollDown, 300);
-    setTimeout(scrollDown, 600);
-    setTimeout(scrollDown, 1000);
-    </script>
-    """
-    components.html(js_code, height=0)
-
-# COMPLETE MAIN FUNCTION - Replace your existing main function
 def main():
     """Enhanced main function focused on professional presentation"""
     
