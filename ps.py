@@ -960,7 +960,6 @@ class ResumeData:
                 "📊 **Advanced Analytics:** Expert in ensemble methods, time-series forecasting, and statistical modeling techniques"
             ]
         }
-
 def main():
     """Enhanced main function focused on professional presentation"""
     
@@ -985,6 +984,64 @@ def main():
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Inter', 'Roboto', Arial, sans-serif;
         font-weight: 600;
+    }
+
+    /* Enhanced AI Assistant Section */
+    .ai-assistant-container {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 2px solid #1976d2;
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 1rem 0;
+        box-shadow: 0 8px 32px rgba(25, 118, 210, 0.15);
+        position: relative;
+    }
+    
+    .ai-assistant-header {
+        background: linear-gradient(135deg, #1976d2 0%, #2196f3 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(25, 118, 210, 0.3);
+    }
+    
+    .ai-assistant-header h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+    
+    .ai-assistant-description {
+        background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
+        border-left: 4px solid #1976d2;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 12px rgba(25, 118, 210, 0.08);
+    }
+    
+    .recruiter-note {
+        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        border-left: 4px solid #ff9800;
+        padding: 1.2rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 8px rgba(255, 152, 0, 0.1);
+    }
+    
+    /* Enhanced chat input styling */
+    .stChatInput > div > div > div > div {
+        border: 2px solid #1976d2 !important;
+        border-radius: 15px !important;
+        box-shadow: 0 4px 20px rgba(25, 118, 210, 0.15) !important;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    }
+    
+    .stChatInput input::placeholder {
+        color: #1976d2 !important;
+        font-weight: 500 !important;
     }
 
     /* Enhanced chat visibility styling */
@@ -1200,7 +1257,7 @@ def main():
         st.markdown("""
         <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #1976d2, #2196f3); color: white; border-radius: 10px; margin-bottom: 1rem;">
             <h3 style="margin: 0;">🎯 Quick Navigation</h3>
-            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Click to ask in chat ↓</p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Click sections to explore ↓</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -1235,9 +1292,9 @@ def main():
         st.metric("ML Model Accuracy", "90%", "+15% vs baseline")
         st.metric("Research Projects", "4", "Including Sandia Labs")
     
-    # Enhanced tab structure with dynamic active tab
+    # Enhanced tab structure with all tabs accessible
     tab_labels = [
-        "💬 AI Assistant", 
+        "🤖 AI Assistant", 
         "🎓 Georgia Tech Excellence",
         "🏭 Sandia Labs Research", 
         "🏠 Real Estate Advisor",
@@ -1246,8 +1303,8 @@ def main():
         "📊 Skills & Performance"
     ]
     
-    # Create tabs and get the selected one
-    selected_tab = st.tabs(tab_labels)
+    # Create tabs
+    tabs = st.tabs(tab_labels)
     
     # Override tab selection if sidebar button was clicked
     if 'active_tab' in st.session_state and st.session_state.active_tab == 0:
@@ -1255,41 +1312,75 @@ def main():
         if st.session_state.messages and len(st.session_state.messages) >= 2:
             latest_message = st.session_state.messages[-1]
             if latest_message["role"] == "assistant":
-                st.info("💬 **New response added to AI Assistant chat!** Click the 'AI Assistant' tab above to see the answer.", icon="🎯")
+                st.info("🤖 **New response added to AI Assistant chat!** Click the 'AI Assistant' tab above to see the answer.", icon="🎯")
     
-    # Tab 1: AI Assistant
-    with selected_tab[0]:
-        # Enhanced AI chat interface with professional recruiter note
+    # Tab 1: AI Assistant - Enhanced Professional Design
+    with tabs[0]:
         st.markdown("""
-        <div class="tab-content">
-            <h2 style="color: #1976d2;">💬 AI-Powered Resume Assistant</h2>
-            <p style="font-size: 1.1rem; color: #666; margin-bottom: 1rem; line-height: 1.5;">
-                Discover Petros's Data Science expertise, quantifiable achievements, technical competencies, and project outcomes. 
-                Receive detailed, recruiter-focused insights with specific performance metrics and demonstrated business impact.
-            </p>
-            <div style="background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%); 
-                        border-left: 4px solid #1976d2; 
-                        padding: 1.2rem; 
-                        border-radius: 10px; 
-                        margin-bottom: 1.5rem;
-                        box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);">
-                <p style="margin: 0; color: #1565c0; font-weight: 500; font-size: 0.95rem; line-height: 1.4;">
-                    📋 <strong>Note for Recruiters:</strong> This intelligent assistant is optimized for
-                    evaluating my CV. For optimal performance and token efficiency, please formulate concise, 
-                    targeted questions. Additional details are available through the structured navigation tabs above or the fast questions left. Please use them for navigation and keep the chat concise.
-                    Agent might be mistaken some times, for validation reflect the CV information and the tabs.
+        <div class="ai-assistant-container">
+            <div class="ai-assistant-header">
+                <h2>AI-Powered Career Analysis Platform</h2>
+                <p style="margin: 0; font-size: 1.1rem; font-weight: 400; opacity: 0.95;">
+                    Intelligent Technical Expertise Evaluation & Professional Assessment System
                 </p>
+            </div>
+            
+            <div class="ai-assistant-description">
+                <h3 style="color: #1976d2; margin: 0 0 1rem 0; font-size: 1.2rem;">
+                    🎯 Professional Expertise Discovery Platform
+                </h3>
+                <p style="font-size: 1.05rem; color: #555; margin-bottom: 1rem; line-height: 1.6;">
+                    Discover Petros's Data Science expertise, quantifiable achievements, technical competencies, and project outcomes. 
+                    Receive detailed, recruiter-focused insights with specific performance metrics and demonstrated business impact.
+                </p>
+                
+                <div class="recruiter-note">
+                    <h4 style="margin: 0 0 0.8rem 0; color: #e65100; font-size: 1rem;">
+                        📋 Note for Recruiters & Hiring Managers
+                    </h4>
+                    <p style="margin: 0; color: #bf360c; font-weight: 500; font-size: 0.95rem; line-height: 1.4;">
+                        This intelligent assistant is optimized for evaluating technical qualifications and career achievements. 
+                        For optimal performance and efficient analysis, please formulate concise, targeted questions about specific 
+                        competencies or project outcomes. Additional structured information is available through the navigation tabs above.
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); 
+                            border-left: 4px solid #4caf50; 
+                            padding: 1.2rem; 
+                            border-radius: 10px; 
+                            margin-top: 1rem;
+                            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);">
+                    <h4 style="margin: 0 0 0.8rem 0; color: #2e7d32; font-size: 1rem;">
+                        💡 Suggested Professional Inquiries
+                    </h4>
+                    <ul style="margin: 0; color: #388e3c; font-size: 0.9rem; line-height: 1.5;">
+                        <li>"Analyze his machine learning model performance and business impact"</li>
+                        <li>"What are his quantifiable achievements in predictive analytics?"</li>
+                        <li>"How does his academic performance compare to industry standards?"</li>
+                        <li>"Evaluate his technical readiness for senior data science roles"</li>
+                    </ul>
+                </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
         
-        # Display chat messages
+        # Display chat messages with enhanced styling
+        if st.session_state.messages:
+            st.markdown("""
+            <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
+                        border-radius: 15px; padding: 1rem; margin: 1rem 0;
+                        border: 1px solid rgba(25, 118, 210, 0.1);">
+                <h4 style="color: #1976d2; margin: 0 0 0.5rem 0;">📋 Conversation History</h4>
+            </div>
+            """, unsafe_allow_html=True)
+            
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
         
         # Enhanced chat input with professional placeholder
-        if prompt := st.chat_input("💭 Inquire about technical expertise, quantifiable results, or specific project achievements..."):
+        if prompt := st.chat_input("💬 Ask about technical expertise, quantifiable results, project achievements, or career qualifications..."):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
                 st.markdown(prompt)
@@ -1301,7 +1392,7 @@ def main():
                     st.session_state.messages.append({"role": "assistant", "content": response})
     
     # Tab 2: Georgia Tech Excellence  
-    with selected_tab[1]:
+    with tabs[1]:
         # Enhanced Georgia Tech tab
         st.markdown('<div class="tab-content">', unsafe_allow_html=True)
         GeorgaTechShowcase.display_program_showcase()
@@ -1336,7 +1427,7 @@ def main():
         st.markdown('</div>', unsafe_allow_html=True)
     
     # Tab 3: Sandia Labs Research
-    with selected_tab[2]:
+    with tabs[2]:
         # Enhanced Sandia Labs Research tab
         st.markdown("""
         <div class="tab-content">
@@ -1359,6 +1450,168 @@ def main():
         col1, col2 = st.columns(2)
         
         with col1:
+            st.markdown("### 🏈 Project Genesis & Foundation")
+            st.markdown("""
+            **Partnership & Domain Expertise:**
+            • Co-founded with longtime football partner and fellow player
+            • Deep domain knowledge from years of playing experience
+            • Extensive research into goal-scoring patterns and game dynamics
+            • Specialized focus on second-half goal occurrence prediction
+
+            **Research-Driven Approach:**
+            • Multi-year analysis of factors affecting second-half scoring
+            • Mathematical formula development through heuristics and domain expertise
+            • Hand-crafted initial models based on football knowledge
+            • Iterative data-driven refinement and optimization
+            """)
+            
+            st.markdown("### 🎯 Technical Architecture & Evolution")
+            st.markdown("""
+            **System Development Phases:**
+            • **Phase 1:** Heuristic mathematical formula creation
+            • **Phase 2:** Automated web scraping and data collection
+            • **Phase 3:** Real-time notification and alert systems
+            • **Phase 4:** Machine Learning integration and model optimization
+
+            **Production Technology Stack:**
+            • Python ecosystem for core development and analysis
+            • Selenium for automated, real-time data collection
+            • ETL pipelines for data processing and feature engineering
+            • Email notification automation for stakeholders
+            • Advanced ML algorithms for prediction optimization
+            """)
+        
+        with col2:
+            st.markdown("### 📈 Performance Metrics & Results")
+            st.markdown("""
+            **Exceptional Accuracy & Performance:**
+            • 90% accuracy for high-confidence predictions
+            • Significantly outperformed 75-80% baseline rates
+            • Consistent performance validated across 1,000+ matches
+            • Real-time predictions delivered within 3-second SLA
+            • Automated risk assessment and confidence scoring
+
+            **Quantifiable Business Impact:**
+            • High estimated ROI through accurate prediction systems
+            • Automated decision-making and risk management
+            • Evidence-based betting strategies with performance tracking
+            • Measurable improvements in prediction accuracy over time
+            """)
+            
+            st.markdown("### 🔧 Advanced System Capabilities")
+            st.markdown("""
+            **Production-Grade Features:**
+            • Real-time data scraping and processing pipelines
+            • Automated high-confidence prediction alerts
+            • Historical performance tracking and analysis
+            • Machine Learning model continuous optimization
+            • Statistical validation against public benchmarks
+
+            **Open Source & Documentation:**
+            • [GitHub Repository](https://github.com/venie1/BetPredictor)
+            • Complete methodology and technical documentation
+            • Reproducible results with performance validation
+            • Educational resource for sports analytics community
+            """)
+    
+    # Tab 6: Project Portfolio
+    with tabs[5]:
+        # Enhanced Project Portfolio Section
+        st.markdown('<div class="tab-content">', unsafe_allow_html=True)
+        st.markdown("### 🚀 Data Science & Machine Learning Project Portfolio")
+        
+        resume_data = ResumeData()
+        for i, project in enumerate(resume_data.data['projects'], 1):
+            badges = ''.join([f"<span class='skill-badge'>{skill}</span>" for skill in project['tech_stack'][:6]])
+            
+            st.markdown(f"""
+            <div class='project-card' id='project-{i}'>
+                <h3 style='color: #1976d2; margin-bottom: 0.8rem; font-size: 1.3rem;'>
+                    {i}. {project['name']}
+                    <span style='font-size: 0.9em; color: #666; font-weight: 400;'>({project['project_type']})</span>
+                </h3>
+                <p style='color: #555; font-size: 1rem; margin-bottom: 0.5rem; line-height: 1.4;'>
+                    <b>Duration:</b> {project['period']}<br/>
+                    <b>Overview:</b> {project['description']}
+                </p>
+                <div style='margin: 1.5rem 0;'>
+                    <b style='color: #1976d2; font-size: 1.1rem;'>Key Technical Achievements:</b>
+                    <ul style='margin-top: 0.5rem; padding-left: 1.2rem;'>
+                        {''.join([f'<li style="margin-bottom: 0.3rem; color: #444;">{a}</li>' for a in project['achievements']])}
+                    </ul>
+                </div>
+                <div style='margin-top: 1rem;'>
+                    <b style='color: #1976d2;'>Technology Stack:</b><br/>
+                    <div style='margin-top: 0.5rem;'>{badges}</div>
+                    {f'<p style="margin-top: 1rem;"><b>Repository:</b> <a href="{project["github"]}" target="_blank" style="color: #1976d2;">{project["github"]}</a></p>' if project.get('github') else ''}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Tab 7: Skills & Performance
+    with tabs[6]:
+        # Enhanced Skills & Performance section
+        st.markdown('<div class="tab-content">', unsafe_allow_html=True)
+        st.markdown("### 📊 Performance Metrics & Technical Benchmarks")
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Sports ML Accuracy", "90%", "vs 75-80% baseline")
+        with col2:
+            st.metric("Real Estate MAPE", "6%", "1-3 month horizon")
+        with col3:
+            st.metric("Predictive Maintenance AUC", "0.732", "20% cost reduction")
+        with col4:
+            st.metric("Academic Performance", "3.91/4.0", "Top 5% of cohort")
+        
+        # Technical Skills Matrix
+        st.markdown("### 🛠️ Technical Skills & Expertise Matrix")
+        resume_data = ResumeData()
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("#### Core Data Science & ML")
+            core_skills = resume_data.data['skills']['Core Technical']
+            for i, skill in enumerate(core_skills[:8]):
+                proficiency = 85 + (i % 3) * 5  # Vary proficiency realistically
+                st.progress(proficiency / 100, text=f"{skill}: {proficiency}%")
+        
+        with col2:
+            st.markdown("#### Specialized Domains")
+            domain_skills = resume_data.data['skills']['Specialized Domains']
+            for skill in domain_skills:
+                proficiency = 82 + len(skill) % 15  # Realistic variation
+                st.progress(proficiency / 100, text=f"{skill}: {proficiency}%")
+        
+        # Project Impact Visualization
+        st.markdown("### 📈 Project Impact & Business Value")
+        
+        # Create simple impact chart
+        project_names = ["Sandia Labs", "Sports Analytics", "Real Estate", "Trading Strategies"]
+        impact_scores = [95, 90, 85, 88]
+        
+        col1, col2, col3, col4 = st.columns(4)
+        columns = [col1, col2, col3, col4]
+        
+        for i, (name, score) in enumerate(zip(project_names, impact_scores)):
+            with columns[i]:
+                st.markdown(f"""
+                <div class="metric-card">
+                    <h4 style="color: #1976d2;">{name}</h4>
+                    <h3 style="color: #2e7d32; margin: 0.5rem 0;">{score}%</h3>
+                    <p style="color: #666; font-size: 0.9rem;">Business Impact</p>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# Run the application
+if __name__ == "__main__":
+    main()
+        
+        with col1:
             st.markdown("### 🔬 Research Excellence & Innovation")
             st.markdown("""
             **Elite Partnership Status:**
@@ -1371,7 +1624,7 @@ def main():
             • Pioneered behavioral vs. technical failure analysis methodology
             • Advanced psychological variables investigation in mechanical failures
             • Preventive training recommendations through behavioral insights
-            • pandas, NumPy, matplotlib, seaborn,scikit-learn (pipelines, imputation, metrics), XGBoost,Bootstrap up‑sampling, cost‑sensitive thresholding,Custom pipeline classes to prevent data leakage; fixed random seeds
+            • pandas, NumPy, matplotlib, seaborn, scikit-learn (pipelines, imputation, metrics), XGBoost, Bootstrap up‑sampling, cost‑sensitive thresholding, Custom pipeline classes to prevent data leakage; fixed random seeds
             """)
             
             st.markdown("### 📊 Quantifiable Research Impact")
@@ -1415,7 +1668,7 @@ def main():
             """)
     
     # Tab 4: Real Estate Advisor
-    with selected_tab[3]:
+    with tabs[3]:
         # Real Estate Advisor dedicated section
         st.markdown("""
         <div class="tab-content">
@@ -1510,7 +1763,7 @@ def main():
                 st.metric("Portfolio Uplift", "12-15%", "backtesting ROI")
     
     # Tab 5: BetMax Analytics
-    with selected_tab[4]:
+    with tabs[4]:
         # Enhanced BetMax Sports Analytics section
         st.markdown("""
         <div class="tab-content">
@@ -1525,169 +1778,6 @@ def main():
             ">
                 <h2>⚽ BetMax Sports Analytics</h2>
                 <h3>Advanced Football Prediction System</h3>
-                <h4>4+ Years of Constant ROI</h4>
+                <h4>90% Accuracy | 4+ Years of Proven Performance</h4>
             </div>
         </div>
-        """, unsafe_allow_html=True)
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("### 🏈 Project Genesis & Foundation")
-            st.markdown("""
-            **Partnership & Domain Expertise:**
-            • Co-founded with longtime football partner and fellow player
-            • Deep domain knowledge from years of playing experience
-            • Extensive research into goal-scoring patterns and game dynamics
-            • Specialized focus on second-half goal occurrence prediction
-
-            **Research-Driven Approach:**
-            • Multi-year analysis of factors affecting second-half scoring
-            • Mathematical formula development through heuristics and domain expertise
-            • Hand-crafted initial models based on football knowledge
-            • Iterative data-driven refinement and optimization
-            """)
-            
-            st.markdown("### 🎯 Technical Architecture & Evolution")
-            st.markdown("""
-            **System Development Phases:**
-            • **Phase 1:** Heuristic mathematical formula creation
-            • **Phase 2:** Automated web scraping and data collection
-            • **Phase 3:** Real-time notification and alert systems
-            • **Phase 4:** Machine Learning integration and model optimization
-
-            **Production Technology Stack:**
-            • Python ecosystem for core development and analysis
-            • Selenium for automated, real-time data collection
-            • ETL pipelines for data processing and feature engineering
-            • Email notification automation for stakeholders
-            • Advanced ML algorithms for prediction optimization
-            """)
-        
-        with col2:
-            st.markdown("### 📈 Performance Metrics & Results")
-            st.markdown("""
-            **Exceptional Accuracy & Performance:**
-            • 90% accuracy for high-confidence predictions
-            • Significantly outperformed 75-80% baseline rates
-            • Consistent performance validated across 1,000+ matches
-            • Real-time predictions delivered within 3-second SLA
-            • Automated risk assessment and confidence scoring
-
-            **Quantifiable Business Impact:**
-            • High estimated ROI through accurate prediction systems
-            • Automated decision-making and risk management
-            • Evidence-based betting strategies with performance tracking
-            • Measurable improvements in prediction accuracy over time
-            """)
-            
-            st.markdown("### 🔧 Advanced System Capabilities")
-            st.markdown("""
-            **Production-Grade Features:**
-            • Real-time data scraping and processing pipelines
-            • Automated high-confidence prediction alerts
-            • Historical performance tracking and analysis
-            • Machine Learning model continuous optimization
-            • Statistical validation against public benchmarks
-
-            **Open Source & Documentation:**
-            • [GitHub Repository](https://github.com/venie1/BetPredictor)
-            • Complete methodology and technical documentation
-            • Reproducible results with performance validation
-            • Educational resource for sports analytics community
-            """)
-    
-    with tab6:
-        # Enhanced Project Portfolio Section
-        st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-        st.markdown("### 🚀 Data Science & Machine Learning Project Portfolio")
-        
-        resume_data = ResumeData()
-        for i, project in enumerate(resume_data.data['projects'], 1):
-            badges = ''.join([f"<span class='skill-badge'>{skill}</span>" for skill in project['tech_stack'][:6]])
-            
-            st.markdown(f"""
-            <div class='project-card' id='project-{i}'>
-                <h3 style='color: #1976d2; margin-bottom: 0.8rem; font-size: 1.3rem;'>
-                    {i}. {project['name']}
-                    <span style='font-size: 0.9em; color: #666; font-weight: 400;'>({project['project_type']})</span>
-                </h3>
-                <p style='color: #555; font-size: 1rem; margin-bottom: 0.5rem; line-height: 1.4;'>
-                    <b>Duration:</b> {project['period']}<br/>
-                    <b>Overview:</b> {project['description']}
-                </p>
-                <div style='margin: 1.5rem 0;'>
-                    <b style='color: #1976d2; font-size: 1.1rem;'>Key Technical Achievements:</b>
-                    <ul style='margin-top: 0.5rem; padding-left: 1.2rem;'>
-                        {''.join([f'<li style="margin-bottom: 0.3rem; color: #444;">{a}</li>' for a in project['achievements']])}
-                    </ul>
-                </div>
-                <div style='margin-top: 1rem;'>
-                    <b style='color: #1976d2;'>Technology Stack:</b><br/>
-                    <div style='margin-top: 0.5rem;'>{badges}</div>
-                    {f'<p style="margin-top: 1rem;"><b>Repository:</b> <a href="{project["github"]}" target="_blank" style="color: #1976d2;">{project["github"]}</a></p>' if project.get('github') else ''}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    with tab7:
-        # Enhanced Skills & Performance section
-        st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-        st.markdown("### 📊 Performance Metrics & Technical Benchmarks")
-        
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.metric("Sports ML Accuracy", "90%", "vs 75-80% baseline")
-        with col2:
-            st.metric("Real Estate MAPE", "6%", "1-3 month horizon")
-        with col3:
-            st.metric("Predictive Maintenance AUC", "0.732", "20% cost reduction")
-        with col4:
-            st.metric("Academic Performance", "3.91/4.0", "Top 5% of cohort")
-        
-        # Technical Skills Matrix
-        st.markdown("### 🛠️ Technical Skills & Expertise Matrix")
-        resume_data = ResumeData()
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("#### Core Data Science & ML")
-            core_skills = resume_data.data['skills']['Core Technical']
-            for i, skill in enumerate(core_skills[:8]):
-                proficiency = 85 + (i % 3) * 5  # Vary proficiency realistically
-                st.progress(proficiency / 100, text=f"{skill}: {proficiency}%")
-        
-        with col2:
-            st.markdown("#### Specialized Domains")
-            domain_skills = resume_data.data['skills']['Specialized Domains']
-            for skill in domain_skills:
-                proficiency = 82 + len(skill) % 15  # Realistic variation
-                st.progress(proficiency / 100, text=f"{skill}: {proficiency}%")
-        
-        # Project Impact Visualization
-        st.markdown("### 📈 Project Impact & Business Value")
-        
-        # Create simple impact chart
-        project_names = ["Sandia Labs", "Sports Analytics", "Real Estate", "Trading Strategies"]
-        impact_scores = [95, 90, 85, 88]
-        
-        col1, col2, col3, col4 = st.columns(4)
-        columns = [col1, col2, col3, col4]
-        
-        for i, (name, score) in enumerate(zip(project_names, impact_scores)):
-            with columns[i]:
-                st.markdown(f"""
-                <div class="metric-card">
-                    <h4 style="color: #1976d2;">{name}</h4>
-                    <h3 style="color: #2e7d32; margin: 0.5rem 0;">{score}%</h3>
-                    <p style="color: #666; font-size: 0.9rem;">Business Impact</p>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-
-# Run the application
-if __name__ == "__main__":
-    main()
