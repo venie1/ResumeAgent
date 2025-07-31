@@ -10,6 +10,7 @@ import openai
 import os
 import time
 import uuid
+import streamlit.components.v1 as components
 class ProjectShowcase:
     """Enhanced project showcase with visual elements for recruiters"""
     @staticmethod
@@ -751,16 +752,26 @@ Petros is exceptionally well-qualified for this data science role!
         return self.intelligent_response.get_section_response(section)
 # Add this function at the top after imports
 def scroll_to_bottom():
-    """Simple auto-scroll using HTML and JavaScript"""
-    scroll_script = """
-    <script>
-    setTimeout(function() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }, 100);
-    </script>
-    """
-    st.components.v1.html(scroll_script, height=0)
-class ResumeData:
+    """Working auto-scroll for Streamlit using components.html"""
+    components.html(
+        """
+        <script>
+        function scrollToBottom() {
+            window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
+        }
+        
+        // Immediate scroll
+        scrollToBottom();
+        
+        // Also scroll after a short delay to ensure content is loaded
+        setTimeout(scrollToBottom, 100);
+        setTimeout(scrollToBottom, 300);
+        setTimeout(scrollToBottom, 500);
+        </script>
+        """,
+        height=0,
+    )
+
     """Enhanced Resume Data with comprehensive information"""
     
     def __init__(self):
@@ -1426,78 +1437,54 @@ def main():
                 Discover Petros's Data Science expertise, quantifiable achievements, technical competencies, and project outcomes. 
                 Receive detailed, recruiter-focused insights with specific performance metrics and demonstrated business impact.
             </p>
-            <div class="recruiter-note">
-                <p class="recruiter-note-content">
-                    📋 <strong>Note for Recruiters:</strong> This intelligent assistant is optimized for
-                    evaluating my CV. For optimal performance and token efficiency, please formulate concise, 
-                    targeted questions. Additional details are available through the structured navigation tabs above or the fast questions left. Please use them for navigation and keep the chat concise.
-                </p>
-            </div>
         </div>
         """, unsafe_allow_html=True)
         
         # FIXED: Quick prompts section with unique keys
-        st.markdown("""
-        <div class="quick-prompt-section">
-            <h3 class="quick-prompt-title">💡 Suggested Questions for Recruiters</h3>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # FIXED: Create suggested prompts with unique keys
         suggested_prompts = [
             "Tell me about his predictive modeling achievements",
             "What advanced ML algorithms does he specialize in?",
             "Show me his time-series forecasting performance",
             "How does his 3.91 GPA compare in Georgia Tech's program?",
             "What makes him stand out for ML engineering roles?",
-            "Walk me through his Sandia Labs research partnership",
-            "Explain his real estate forecasting methodology and results",
-            "What's his sports analytics system architecture?",
-            "How experienced is he with TensorFlow and XGBoost?",
-            "Tell me about his research publication potential",
-            "Show me his quantifiable business impact metrics",
-            "What's his Python/R/SQL proficiency level?"
+            "Walk me through his Sandia Labs research partnership"
         ]
         
-        # FIXED: Create columns for the prompts with unique keys
+        st.markdown("### 💡 Suggested Questions for Recruiters")
         cols = st.columns(3)
         for i, prompt in enumerate(suggested_prompts):
             col_idx = i % 3
             with cols[col_idx]:
-                # FIXED: Use index-based unique key
-                if st.button(prompt, key=f"suggest_prompt_{i}", use_container_width=True):
+                # Use unique key with timestamp to avoid duplicates
+                button_key = f"suggest_{i}_{len(st.session_state.messages)}"
+                if st.button(prompt, key=button_key, use_container_width=True):
                     # Add to chat when clicked
-                    response = st.session_state.chatbot.get_response(prompt)
                     st.session_state.messages.append({"role": "user", "content": prompt})
+                    response = st.session_state.chatbot.get_response(prompt)
                     st.session_state.messages.append({"role": "assistant", "content": response})
-                    # Trigger scroll
-                    st.session_state.scroll_trigger += 1
                     st.rerun()
         
-        # Display chat messages FIRST
+        # Display chat messages
         if st.session_state.messages:
             for message in st.session_state.messages:
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"])
+            
+            # IMPORTANT: Auto-scroll AFTER displaying messages
+            force_scroll_to_bottom()
         
-        # FIXED: Chat input AFTER messages with proper scrolling
-        if prompt := st.chat_input("💬 Inquire about technical expertise, quantifiable results, or specific project achievements..."):
-            # Add user message first
+        # Chat input
+        if prompt := st.chat_input("💬 Ask about technical expertise..."):
+            # Add user message
             st.session_state.messages.append({"role": "user", "content": prompt})
             
-            # Generate response
-            with st.spinner("🧠 Analyzing technical credentials and performance metrics..."):
+            # Generate and add response
+            with st.spinner("🧠 Analyzing..."):
                 response = st.session_state.chatbot.get_response(prompt)
                 st.session_state.messages.append({"role": "assistant", "content": response})
             
-            # Trigger scroll and rerun
-            st.session_state.scroll_trigger += 1
+            # Rerun to show new messages and auto-scroll
             st.rerun()
-        
-        # FIXED: Auto-scroll trigger
-        if st.session_state.scroll_trigger > 0:
-            scroll_to_bottom()
-            st.session_state.scroll_trigger = 0
     
     with tab2:
         # Enhanced Georgia Tech tab
