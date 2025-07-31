@@ -1193,7 +1193,6 @@ def main():
     if 'chatbot' not in st.session_state:
         st.session_state.chatbot = ResumeAssistantChatbot()
         st.session_state.messages = []
-        st.session_state.active_tab = 0  # Track active tab
     
     # Enhanced Sidebar with navigation functionality
     with st.sidebar:
@@ -1210,10 +1209,6 @@ def main():
                 response = st.session_state.chatbot.get_section_response(section)
                 st.session_state.messages.append({"role": "user", "content": menu_text})
                 st.session_state.messages.append({"role": "assistant", "content": response})
-                # Force switch to first tab (AI Assistant)
-                st.session_state.active_tab = 0
-                # Use query params to switch tabs
-                st.query_params["tab"] = "chat"
                 st.rerun() 
         
         st.markdown("---")
@@ -1237,7 +1232,7 @@ def main():
         st.metric("ML Model Accuracy", "90%", "+15% vs baseline")
         st.metric("Research Projects", "4", "Including Sandia Labs")
     
-    # Enhanced tab structure with active tab tracking
+    # Enhanced tab structure
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
         "💬 AI Assistant", 
         "🎓 Georgia Tech Excellence",
@@ -1289,7 +1284,6 @@ def main():
                     response = st.session_state.chatbot.get_response(prompt)
                     st.markdown(response)
                     st.session_state.messages.append({"role": "assistant", "content": response})
-
     
     with tab2:
         # Enhanced Georgia Tech tab
@@ -1404,7 +1398,7 @@ def main():
             """)
     
     with tab4:
-        # NEW: Real Estate Advisor dedicated tab
+        # Real Estate Advisor dedicated section
         st.markdown("""
         <div class="tab-content">
             <div style="
@@ -1498,7 +1492,7 @@ def main():
                 st.metric("Portfolio Uplift", "12-15%", "backtesting ROI")
     
     with tab5:
-        # Enhanced BetMax Sports Analytics tab
+        # Enhanced BetMax Sports Analytics section
         st.markdown("""
         <div class="tab-content">
             <div style="
@@ -1585,7 +1579,7 @@ def main():
             """)
     
     with tab6:
-        # Enhanced Project Portfolio Tab
+        # Enhanced Project Portfolio Section
         st.markdown('<div class="tab-content">', unsafe_allow_html=True)
         st.markdown("### 🚀 Data Science & Machine Learning Project Portfolio")
         
@@ -1620,7 +1614,7 @@ def main():
         st.markdown('</div>', unsafe_allow_html=True)
     
     with tab7:
-        # Enhanced Skills & Performance tab
+        # Enhanced Skills & Performance section
         st.markdown('<div class="tab-content">', unsafe_allow_html=True)
         st.markdown("### 📊 Performance Metrics & Technical Benchmarks")
         
