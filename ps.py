@@ -8,6 +8,8 @@ from typing import Dict, List, Optional
 from collections import Counter
 import openai
 import os
+import time
+import uuid
 class ProjectShowcase:
     """Enhanced project showcase with visual elements for recruiters"""
     @staticmethod
@@ -749,21 +751,46 @@ Petros is exceptionally well-qualified for this data science role!
         return self.intelligent_response.get_section_response(section)
 # Add this function at the top after imports
 def scroll_to_bottom():
-    """JavaScript to scroll to bottom of chat"""
-    scroll_js = f"""
+    """JavaScript to scroll to bottom of chat using st.empty and rerun"""
+    js_code = f"""
     <script>
-        // Force scroll to bottom - Updated at {time.time()}
+    function scrollToBottom() {{
         setTimeout(function() {{
-            var chatSection = document.getElementById('chat-section');
-            if (chatSection) {{
-                chatSection.scrollIntoView({{ behavior: 'smooth', block: 'end' }});
-            }}
-            // Also scroll the main container to bottom
+            // Scroll to the very bottom of the page
             window.scrollTo({{ top: document.body.scrollHeight, behavior: 'smooth' }});
-        }}, 100);
+            
+            // Also try to find chat messages container and scroll it
+            const chatMessages = document.querySelector('[data-testid="stChatMessage"]');
+            if (chatMessages) {{
+                chatMessages.scrollIntoView({{ behavior: 'smooth', block: 'end' }});
+            }}
+            
+            // Alternative: scroll to the chat input
+            const chatInput = document.querySelector('[data-testid="stChatInput"]');
+            if (chatInput) {{
+                chatInput.scrollIntoView({{ behavior: 'smooth', block: 'center' }});
+            }}
+        }}, 500);
+    }}
+    
+    // Call the function
+    scrollToBottom();
+    
+    // Also set up observer for new messages
+    const observer = new MutationObserver(function(mutations) {{
+        mutations.forEach(function(mutation) {{
+            if (mutation.addedNodes.length > 0) {{
+                scrollToBottom();
+            }}
+        }});
+    }});
+    
+    // Start observing
+    const targetNode = document.body;
+    observer.observe(targetNode, {{ childList: true, subtree: true }});
     </script>
     """
-    html(scroll_js, height=0)
+    st.components.v1.html(js_code, height=0)
 class ResumeData:
     """Enhanced Resume Data with comprehensive information"""
     
@@ -1353,9 +1380,10 @@ def main():
     if 'chatbot' not in st.session_state:
         st.session_state.chatbot = ResumeAssistantChatbot()
         st.session_state.messages = []
+        st.session_state.scroll_trigger = 0
     
     # Enhanced Sidebar with direct question functionality
-    with st.sidebar:
+     with st.sidebar:
         st.markdown("""
         <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #1976d2, #2196f3); color: white; border-radius: 10px; margin-bottom: 1rem;">
             <h3 style="margin: 0;">🎯 Quick Questions</h3>
@@ -1363,7 +1391,7 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         
-        # Quick question prompts that will be added to chat
+        # FIXED: Quick question prompts with unique keys using uuid
         quick_questions = {
             "👤 Professional Summary": "Tell me about Petros's professional background and overall qualifications",
             "🎓 Academic Excellence": "What are Petros's educational achievements and academic performance?",
@@ -1374,38 +1402,39 @@ def main():
             "📞 Contact Information": "How can I contact Petros for opportunities?"
         }
         
-        for button_text, question in quick_questions.items():
-            if st.button(button_text, key=f"quick_{hash(question)}", use_container_width=True):
+        for i, (button_text, question) in enumerate(quick_questions.items()):
+            # FIXED: Use index-based unique key instead of hash
+            if st.button(button_text, key=f"sidebar_quick_{i}", use_container_width=True):
                 # Add question and response to chat
                 response = st.session_state.chatbot.get_response(question)
                 st.session_state.messages.append({"role": "user", "content": question})
                 st.session_state.messages.append({"role": "assistant", "content": response})
-                # Switch to AI Assistant tab and scroll to chat
-                st.session_state.active_tab = 0
+                # Trigger scroll
+                st.session_state.scroll_trigger += 1
                 st.rerun()
         
         st.markdown("---")
         
-        # Enhanced Settings
+        # Enhanced Settings (keep same)
         st.markdown("### ⚙️ Assistant Settings")
         use_ai = st.toggle("🤖 AI-Enhanced Responses", value=st.session_state.chatbot.config.enable_openai)
         if use_ai != st.session_state.chatbot.config.enable_openai:
             st.session_state.chatbot.config.enable_openai = use_ai
             st.rerun()
         
-        if st.button("🗑️ Clear Chat History", use_container_width=True):
+        if st.button("🗑️ Clear Chat History", key="clear_chat_sidebar", use_container_width=True):
             st.session_state.messages = []
             st.session_state.chatbot.conversation_history = []
             st.rerun()
         
-        # Quick stats sidebar
+        # Quick stats sidebar (keep same)
         st.markdown("---")
         st.markdown("### 📊 Quick Stats")
         st.metric("Academic Performance", "3.91/4.0", "Top 5% of Cohort")
         st.metric("ML Model Accuracy", "90%", "+15% vs baseline")
         st.metric("Research Projects", "4", "Including Sandia Labs")
     
-    # Enhanced tab structure
+    # Enhanced tab structure (keep same)
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
         "AI Assistant", 
         "🎓 Georgia Tech Excellence",
@@ -1420,7 +1449,7 @@ def main():
         # Add chat section anchor
         st.markdown('<div id="chat-section"></div>', unsafe_allow_html=True)
         
-        # Professional AI Assistant Section
+        # Professional AI Assistant Section (keep same)
         st.markdown("""
         <div class="professional-section">
             <h2 class="section-title">AI-Powered Resume Assistant</h2>
@@ -1438,14 +1467,14 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         
-        # Quick prompts section
+        # FIXED: Quick prompts section with unique keys
         st.markdown("""
         <div class="quick-prompt-section">
             <h3 class="quick-prompt-title">💡 Suggested Questions for Recruiters</h3>
-            <div class="quick-prompts-grid">
+        </div>
         """, unsafe_allow_html=True)
         
-        # Create suggested prompts as clickable elements
+        # FIXED: Create suggested prompts with unique keys
         suggested_prompts = [
             "Tell me about his predictive modeling achievements",
             "What advanced ML algorithms does he specialize in?",
@@ -1461,51 +1490,45 @@ def main():
             "What's his Python/R/SQL proficiency level?"
         ]
         
-        # Create columns for the prompts
+        # FIXED: Create columns for the prompts with unique keys
         cols = st.columns(3)
         for i, prompt in enumerate(suggested_prompts):
             col_idx = i % 3
             with cols[col_idx]:
-                if st.button(prompt, key=f"suggest_{i}", use_container_width=True):
+                # FIXED: Use index-based unique key
+                if st.button(prompt, key=f"suggest_prompt_{i}", use_container_width=True):
                     # Add to chat when clicked
                     response = st.session_state.chatbot.get_response(prompt)
                     st.session_state.messages.append({"role": "user", "content": prompt})
                     st.session_state.messages.append({"role": "assistant", "content": response})
+                    # Trigger scroll
+                    st.session_state.scroll_trigger += 1
                     st.rerun()
         
-        st.markdown("</div></div>", unsafe_allow_html=True)
-        
-        # Display chat messages with enhanced visibility
+        # Display chat messages FIRST
         if st.session_state.messages:
             for message in st.session_state.messages:
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"])
         
-        # Enhanced chat input with professional placeholder
+        # FIXED: Chat input AFTER messages with proper scrolling
         if prompt := st.chat_input("💬 Inquire about technical expertise, quantifiable results, or specific project achievements..."):
+            # Add user message first
             st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.markdown(prompt)
             
-            with st.chat_message("assistant"):
-                with st.spinner("🧠 Analyzing technical credentials and performance metrics..."):
-                    response = st.session_state.chatbot.get_response(prompt)
-                    st.markdown(response)
-                    st.session_state.messages.append({"role": "assistant", "content": response})
-            
-            # Auto-scroll after response
-            scroll_to_bottom()
-
-# Update the sidebar quick questions section - replace the existing sidebar quick questions with this:
-        for button_text, question in quick_questions.items():
-            if st.button(button_text, key=f"quick_{hash(question)}", use_container_width=True):
-                # Add question and response to chat
-                response = st.session_state.chatbot.get_response(question)
-                st.session_state.messages.append({"role": "user", "content": question})
+            # Generate response
+            with st.spinner("🧠 Analyzing technical credentials and performance metrics..."):
+                response = st.session_state.chatbot.get_response(prompt)
                 st.session_state.messages.append({"role": "assistant", "content": response})
-                # Switch to AI Assistant tab and scroll to chat
-                st.session_state.active_tab = 0
-                st.rerun()
+            
+            # Trigger scroll and rerun
+            st.session_state.scroll_trigger += 1
+            st.rerun()
+        
+        # FIXED: Auto-scroll trigger
+        if st.session_state.scroll_trigger > 0:
+            scroll_to_bottom()
+            st.session_state.scroll_trigger = 0
     
     with tab2:
         # Enhanced Georgia Tech tab
