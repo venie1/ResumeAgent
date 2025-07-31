@@ -976,10 +976,36 @@ def main():
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
+    /* Auto-scroll to bottom script */
+    <script>
+    function scrollToBottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+        setTimeout(() => {
+            const chatMessages = document.querySelectorAll('[data-testid="chat-message"]');
+            if (chatMessages.length > 0) {
+                chatMessages[chatMessages.length - 1].scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+        }, 100);
+    }
+    
+    // Auto scroll when new messages appear
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.addedNodes.length > 0) {
+                scrollToBottom();
+            }
+        });
+    });
+    
+    // Start observing
+    observer.observe(document.body, { childList: true, subtree: true });
+    </script>
+    
     body, .main, .stApp {
         font-family: 'Inter', 'Roboto', Arial, sans-serif;
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         color: #2c3e50;
+        scroll-behavior: smooth;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -987,7 +1013,7 @@ def main():
         font-weight: 600;
     }
 
-    /* Enhanced chat visibility styling */
+    /* Enhanced chat visibility styling with auto-scroll */
     .chat-container {
         background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         border: 3px solid #1976d2;
@@ -997,6 +1023,21 @@ def main():
         box-shadow: 0 8px 32px rgba(25, 118, 210, 0.2);
         position: relative;
         animation: pulse-border 2s infinite;
+        scroll-margin-top: 2rem;
+    }
+    
+    .chat-message-container {
+        scroll-margin-bottom: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .chat-input-container {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 1rem 0;
+        border-top: 1px solid #e0e7ff;
+        z-index: 100;
     }
     
     @keyframes pulse-border {
@@ -1311,10 +1352,11 @@ def main():
     </div>
     """, unsafe_allow_html=True)
 
-    # Initialize chatbot
+    # Initialize chatbot and scroll state
     if 'chatbot' not in st.session_state:
         st.session_state.chatbot = ResumeAssistantChatbot()
         st.session_state.messages = []
+        st.session_state.scroll_to_bottom = False
     
     # Enhanced Sidebar with direct question functionality
     with st.sidebar:
@@ -1342,8 +1384,8 @@ def main():
                 response = st.session_state.chatbot.get_response(question)
                 st.session_state.messages.append({"role": "user", "content": question})
                 st.session_state.messages.append({"role": "assistant", "content": response})
-                # Switch to AI Assistant tab and scroll to chat
-                st.session_state.active_tab = 0
+                # Force scroll to bottom after adding messages
+                st.session_state.scroll_to_bottom = True
                 st.rerun()
         
         st.markdown("---")
@@ -1430,33 +1472,63 @@ def main():
                     response = st.session_state.chatbot.get_response(prompt)
                     st.session_state.messages.append({"role": "user", "content": prompt})
                     st.session_state.messages.append({"role": "assistant", "content": response})
+                    # Force scroll to bottom after adding messages
+                    st.session_state.scroll_to_bottom = True
                     st.rerun()
         
         st.markdown("</div></div>", unsafe_allow_html=True)
         
-        # Chat interface with enhanced styling
+        # Chat interface with enhanced styling and auto-scroll
         st.markdown('<div id="chat-section" style="margin-top: 2rem;">', unsafe_allow_html=True)
         
-        # Display chat messages with enhanced visibility
+        # Display chat messages with enhanced visibility and scroll anchors
         chat_container = st.container()
         with chat_container:
-            for message in st.session_state.messages:
+            for i, message in enumerate(st.session_state.messages):
+                # Add unique ID for each message for scrolling
+                message_id = f"message-{i}"
+                st.markdown(f'<div id="{message_id}" class="chat-message-container"></div>', unsafe_allow_html=True)
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"])
         
-        # Enhanced chat input with professional placeholder
-        chat_input_container = st.container()
-        with chat_input_container:
-            if prompt := st.chat_input("💬 Inquire about technical expertise, quantifiable results, or specific project achievements..."):
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                with st.chat_message("user"):
-                    st.markdown(prompt)
-                
-                with st.chat_message("assistant"):
-                    with st.spinner("🧠 Analyzing technical credentials and performance metrics..."):
-                        response = st.session_state.chatbot.get_response(prompt)
-                        st.markdown(response)
-                        st.session_state.messages.append({"role": "assistant", "content": response})
+        # Auto-scroll to bottom when new messages are added
+        if st.session_state.messages and st.session_state.get('scroll_to_bottom', False):
+            last_message_id = f"message-{len(st.session_state.messages)-1}"
+            st.markdown(f"""
+            <script>
+                setTimeout(function() {{
+                    document.getElementById('{last_message_id}').scrollIntoView({{ 
+                        behavior: 'smooth', 
+                        block: 'end' 
+                    }});
+                    // Also scroll to very bottom to ensure chat input is visible
+                    setTimeout(function() {{
+                        window.scrollTo({{ 
+                            top: document.body.scrollHeight, 
+                            behavior: 'smooth' 
+                        }});
+                    }}, 500);
+                }}, 100);
+            </script>
+            """, unsafe_allow_html=True)
+            st.session_state.scroll_to_bottom = False
+        
+        # Enhanced chat input with professional placeholder - positioned at bottom
+        st.markdown('<div class="chat-input-container">', unsafe_allow_html=True)
+        if prompt := st.chat_input("💬 Inquire about technical expertise, quantifiable results, or specific project achievements..."):
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+            
+            with st.chat_message("assistant"):
+                with st.spinner("🧠 Analyzing technical credentials and performance metrics..."):
+                    response = st.session_state.chatbot.get_response(prompt)
+                    st.markdown(response)
+                    st.session_state.messages.append({"role": "assistant", "content": response})
+            
+            # Set flag to scroll to bottom after response
+            st.session_state.scroll_to_bottom = True
+            st.rerun()
         
         st.markdown('</div>', unsafe_allow_html=True)
     
