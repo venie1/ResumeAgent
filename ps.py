@@ -747,7 +747,23 @@ Petros is exceptionally well-qualified for this data science role!
     def get_section_response(self, section: str) -> str:
         """Get formatted response for a specific section"""
         return self.intelligent_response.get_section_response(section)
-
+# Add this function at the top after imports
+def scroll_to_bottom():
+    """JavaScript to scroll to bottom of chat"""
+    scroll_js = f"""
+    <script>
+        // Force scroll to bottom - Updated at {time.time()}
+        setTimeout(function() {{
+            var chatSection = document.getElementById('chat-section');
+            if (chatSection) {{
+                chatSection.scrollIntoView({{ behavior: 'smooth', block: 'end' }});
+            }}
+            // Also scroll the main container to bottom
+            window.scrollTo({{ top: document.body.scrollHeight, behavior: 'smooth' }});
+        }}, 100);
+    </script>
+    """
+    html(scroll_js, height=0)
 class ResumeData:
     """Enhanced Resume Data with comprehensive information"""
     
@@ -986,7 +1002,29 @@ def main():
         font-family: 'Inter', 'Roboto', Arial, sans-serif;
         font-weight: 600;
     }
-
+    /* Auto-scroll and chat positioning */
+    #chat-section {
+        scroll-margin-top: 100px;
+    }
+    
+    .main .block-container {
+        padding-bottom: 5rem;
+    }
+    
+    /* Ensure chat input stays at bottom */
+    .stChatInput {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        z-index: 999;
+        padding: 1rem 0;
+        margin-top: 2rem;
+    }
+    
+    /* Smooth scroll behavior */
+    html {
+        scroll-behavior: smooth;
+    }
     /* Enhanced chat visibility styling */
     .chat-container {
         background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
@@ -1379,6 +1417,9 @@ def main():
     ])
     
     with tab1:
+        # Add chat section anchor
+        st.markdown('<div id="chat-section"></div>', unsafe_allow_html=True)
+        
         # Professional AI Assistant Section
         st.markdown("""
         <div class="professional-section">
@@ -1434,31 +1475,37 @@ def main():
         
         st.markdown("</div></div>", unsafe_allow_html=True)
         
-        # Chat interface with enhanced styling
-        st.markdown('<div id="chat-section" style="margin-top: 2rem;">', unsafe_allow_html=True)
-        
         # Display chat messages with enhanced visibility
-        chat_container = st.container()
-        with chat_container:
+        if st.session_state.messages:
             for message in st.session_state.messages:
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"])
         
         # Enhanced chat input with professional placeholder
-        chat_input_container = st.container()
-        with chat_input_container:
-            if prompt := st.chat_input("💬 Inquire about technical expertise, quantifiable results, or specific project achievements..."):
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                with st.chat_message("user"):
-                    st.markdown(prompt)
-                
-                with st.chat_message("assistant"):
-                    with st.spinner("🧠 Analyzing technical credentials and performance metrics..."):
-                        response = st.session_state.chatbot.get_response(prompt)
-                        st.markdown(response)
-                        st.session_state.messages.append({"role": "assistant", "content": response})
-        
-        st.markdown('</div>', unsafe_allow_html=True)
+        if prompt := st.chat_input("💬 Inquire about technical expertise, quantifiable results, or specific project achievements..."):
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+            
+            with st.chat_message("assistant"):
+                with st.spinner("🧠 Analyzing technical credentials and performance metrics..."):
+                    response = st.session_state.chatbot.get_response(prompt)
+                    st.markdown(response)
+                    st.session_state.messages.append({"role": "assistant", "content": response})
+            
+            # Auto-scroll after response
+            scroll_to_bottom()
+
+# Update the sidebar quick questions section - replace the existing sidebar quick questions with this:
+        for button_text, question in quick_questions.items():
+            if st.button(button_text, key=f"quick_{hash(question)}", use_container_width=True):
+                # Add question and response to chat
+                response = st.session_state.chatbot.get_response(question)
+                st.session_state.messages.append({"role": "user", "content": question})
+                st.session_state.messages.append({"role": "assistant", "content": response})
+                # Switch to AI Assistant tab and scroll to chat
+                st.session_state.active_tab = 0
+                st.rerun()
     
     with tab2:
         # Enhanced Georgia Tech tab
