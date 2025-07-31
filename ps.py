@@ -773,6 +773,41 @@ def scroll_to_bottom():
     )
 
     """Enhanced Resume Data with comprehensive information"""
+def force_scroll_to_bottom():
+    """Alternative scroll method using parent window"""
+    js_code = """
+    <script>
+    // Multiple scroll attempts with different methods
+    function scrollDown() {
+        // Method 1: Direct scroll to bottom
+        window.parent.scrollTo(0, window.parent.document.body.scrollHeight);
+        
+        // Method 2: Scroll document element
+        window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
+        
+        // Method 3: Find and scroll to chat input
+        const chatInput = window.parent.document.querySelector('[data-testid="stChatInput"]');
+        if (chatInput) {
+            chatInput.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+        
+        // Method 4: Find and scroll to last chat message
+        const chatMessages = window.parent.document.querySelectorAll('[data-testid="stChatMessage"]');
+        if (chatMessages.length > 0) {
+            const lastMessage = chatMessages[chatMessages.length - 1];
+            lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    }
+    
+    // Execute immediately and with delays
+    scrollDown();
+    setTimeout(scrollDown, 100);
+    setTimeout(scrollDown, 300);
+    setTimeout(scrollDown, 600);
+    setTimeout(scrollDown, 1000);
+    </script>
+    """
+    components.html(js_code, height=0)
     
     def __init__(self):
         self.data = {
@@ -1471,7 +1506,7 @@ def main():
                     st.markdown(message["content"])
             
             # IMPORTANT: Auto-scroll AFTER displaying messages
-            scroll_to_bottom()
+            force_scroll_to_bottom()
         
         # Chat input
         if prompt := st.chat_input("💬 Ask about technical expertise..."):
