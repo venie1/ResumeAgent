@@ -11,6 +11,61 @@ import os
 import time
 import uuid
 import streamlit.components.v1 as components
+def force_scroll_to_bottom():
+    """Alternative scroll method using parent window"""
+    js_code = """
+    <script>
+    // Multiple scroll attempts with different methods
+    function scrollDown() {
+        // Method 1: Direct scroll to bottom
+        window.parent.scrollTo(0, window.parent.document.body.scrollHeight);
+        
+        // Method 2: Scroll document element
+        window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
+        
+        // Method 3: Find and scroll to chat input
+        const chatInput = window.parent.document.querySelector('[data-testid="stChatInput"]');
+        if (chatInput) {
+            chatInput.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+        
+        // Method 4: Find and scroll to last chat message
+        const chatMessages = window.parent.document.querySelectorAll('[data-testid="stChatMessage"]');
+        if (chatMessages.length > 0) {
+            const lastMessage = chatMessages[chatMessages.length - 1];
+            lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    }
+    
+    // Execute immediately and with delays
+    scrollDown();
+    setTimeout(scrollDown, 100);
+    setTimeout(scrollDown, 300);
+    setTimeout(scrollDown, 600);
+    setTimeout(scrollDown, 1000);
+    </script>
+    """
+    components.html(js_code, height=0)
+def scroll_to_bottom():
+    """Working auto-scroll for Streamlit using components.html"""
+    components.html(
+        """
+        <script>
+        function scrollToBottom() {
+            window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
+        }
+        
+        // Immediate scroll
+        scrollToBottom();
+        
+        // Also scroll after a short delay to ensure content is loaded
+        setTimeout(scrollToBottom, 100);
+        setTimeout(scrollToBottom, 300);
+        setTimeout(scrollToBottom, 500);
+        </script>
+        """,
+        height=0,
+    )
 class ProjectShowcase:
     """Enhanced project showcase with visual elements for recruiters"""
     @staticmethod
@@ -751,63 +806,8 @@ Petros is exceptionally well-qualified for this data science role!
         """Get formatted response for a specific section"""
         return self.intelligent_response.get_section_response(section)
 # Add this function at the top after imports
-def scroll_to_bottom():
-    """Working auto-scroll for Streamlit using components.html"""
-    components.html(
-        """
-        <script>
-        function scrollToBottom() {
-            window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
-        }
-        
-        // Immediate scroll
-        scrollToBottom();
-        
-        // Also scroll after a short delay to ensure content is loaded
-        setTimeout(scrollToBottom, 100);
-        setTimeout(scrollToBottom, 300);
-        setTimeout(scrollToBottom, 500);
-        </script>
-        """,
-        height=0,
-    )
-
+class ResumeData:
     """Enhanced Resume Data with comprehensive information"""
-def force_scroll_to_bottom():
-    """Alternative scroll method using parent window"""
-    js_code = """
-    <script>
-    // Multiple scroll attempts with different methods
-    function scrollDown() {
-        // Method 1: Direct scroll to bottom
-        window.parent.scrollTo(0, window.parent.document.body.scrollHeight);
-        
-        // Method 2: Scroll document element
-        window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
-        
-        // Method 3: Find and scroll to chat input
-        const chatInput = window.parent.document.querySelector('[data-testid="stChatInput"]');
-        if (chatInput) {
-            chatInput.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-        
-        // Method 4: Find and scroll to last chat message
-        const chatMessages = window.parent.document.querySelectorAll('[data-testid="stChatMessage"]');
-        if (chatMessages.length > 0) {
-            const lastMessage = chatMessages[chatMessages.length - 1];
-            lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-    }
-    
-    // Execute immediately and with delays
-    scrollDown();
-    setTimeout(scrollDown, 100);
-    setTimeout(scrollDown, 300);
-    setTimeout(scrollDown, 600);
-    setTimeout(scrollDown, 1000);
-    </script>
-    """
-    components.html(js_code, height=0)
     
     def __init__(self):
         self.data = {
@@ -1019,6 +1019,70 @@ def force_scroll_to_bottom():
             ]
         }
 
+# Add these imports at the top of your file
+import streamlit.components.v1 as components
+import time
+import uuid
+
+# COMPLETE SCROLL FUNCTIONS - Replace existing scroll functions
+def scroll_to_bottom():
+    """Working auto-scroll for Streamlit using components.html"""
+    components.html(
+        """
+        <script>
+        function scrollToBottom() {
+            window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
+        }
+        
+        // Immediate scroll
+        scrollToBottom();
+        
+        // Also scroll after a short delay to ensure content is loaded
+        setTimeout(scrollToBottom, 100);
+        setTimeout(scrollToBottom, 300);
+        setTimeout(scrollToBottom, 500);
+        </script>
+        """,
+        height=0,
+    )
+
+def force_scroll_to_bottom():
+    """Alternative scroll method using parent window"""
+    js_code = """
+    <script>
+    // Multiple scroll attempts with different methods
+    function scrollDown() {
+        // Method 1: Direct scroll to bottom
+        window.parent.scrollTo(0, window.parent.document.body.scrollHeight);
+        
+        // Method 2: Scroll document element
+        window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
+        
+        // Method 3: Find and scroll to chat input
+        const chatInput = window.parent.document.querySelector('[data-testid="stChatInput"]');
+        if (chatInput) {
+            chatInput.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+        
+        // Method 4: Find and scroll to last chat message
+        const chatMessages = window.parent.document.querySelectorAll('[data-testid="stChatMessage"]');
+        if (chatMessages.length > 0) {
+            const lastMessage = chatMessages[chatMessages.length - 1];
+            lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    }
+    
+    // Execute immediately and with delays
+    scrollDown();
+    setTimeout(scrollDown, 100);
+    setTimeout(scrollDown, 300);
+    setTimeout(scrollDown, 600);
+    setTimeout(scrollDown, 1000);
+    </script>
+    """
+    components.html(js_code, height=0)
+
+# COMPLETE MAIN FUNCTION - Replace your existing main function
 def main():
     """Enhanced main function focused on professional presentation"""
     
@@ -1396,8 +1460,8 @@ def main():
         st.session_state.chatbot = ResumeAssistantChatbot()
         st.session_state.messages = []
         st.session_state.scroll_trigger = 0
-    
-    # Enhanced Sidebar with direct question functionality
+
+    # Enhanced Sidebar with FIXED unique keys
     with st.sidebar:
         st.markdown("""
         <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #1976d2, #2196f3); color: white; border-radius: 10px; margin-bottom: 1rem;">
@@ -1406,7 +1470,7 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         
-        # FIXED: Quick question prompts with unique keys using uuid
+        # FIXED: Quick question prompts with unique keys
         quick_questions = {
             "👤 Professional Summary": "Tell me about Petros's professional background and overall qualifications",
             "🎓 Academic Excellence": "What are Petros's educational achievements and academic performance?",
@@ -1418,19 +1482,18 @@ def main():
         }
         
         for i, (button_text, question) in enumerate(quick_questions.items()):
-            # FIXED: Use index-based unique key instead of hash
-            if st.button(button_text, key=f"sidebar_quick_{i}", use_container_width=True):
+            # FIXED: Use unique key with timestamp
+            unique_key = f"sidebar_q_{i}_{int(time.time()*1000) % 10000}"
+            if st.button(button_text, key=unique_key, use_container_width=True):
                 # Add question and response to chat
-                response = st.session_state.chatbot.get_response(question)
                 st.session_state.messages.append({"role": "user", "content": question})
+                response = st.session_state.chatbot.get_response(question)
                 st.session_state.messages.append({"role": "assistant", "content": response})
-                # Trigger scroll
-                st.session_state.scroll_trigger += 1
                 st.rerun()
         
         st.markdown("---")
         
-        # Enhanced Settings (keep same)
+        # Enhanced Settings
         st.markdown("### ⚙️ Assistant Settings")
         use_ai = st.toggle("🤖 AI-Enhanced Responses", value=st.session_state.chatbot.config.enable_openai)
         if use_ai != st.session_state.chatbot.config.enable_openai:
@@ -1442,14 +1505,14 @@ def main():
             st.session_state.chatbot.conversation_history = []
             st.rerun()
         
-        # Quick stats sidebar (keep same)
+        # Quick stats sidebar
         st.markdown("---")
         st.markdown("### 📊 Quick Stats")
         st.metric("Academic Performance", "3.91/4.0", "Top 5% of Cohort")
         st.metric("ML Model Accuracy", "90%", "+15% vs baseline")
         st.metric("Research Projects", "4", "Including Sandia Labs")
     
-    # Enhanced tab structure (keep same)
+    # Enhanced tab structure
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
         "AI Assistant", 
         "🎓 Georgia Tech Excellence",
@@ -1464,7 +1527,7 @@ def main():
         # Add chat section anchor
         st.markdown('<div id="chat-section"></div>', unsafe_allow_html=True)
         
-        # Professional AI Assistant Section (keep same)
+        # Professional AI Assistant Section
         st.markdown("""
         <div class="professional-section">
             <h2 class="section-title">AI-Powered Resume Assistant</h2>
@@ -1472,55 +1535,76 @@ def main():
                 Discover Petros's Data Science expertise, quantifiable achievements, technical competencies, and project outcomes. 
                 Receive detailed, recruiter-focused insights with specific performance metrics and demonstrated business impact.
             </p>
+            <div class="recruiter-note">
+                <p class="recruiter-note-content">
+                    📋 <strong>Note for Recruiters:</strong> This intelligent assistant is optimized for
+                    evaluating my CV. For optimal performance and token efficiency, please formulate concise, 
+                    targeted questions. Additional details are available through the structured navigation tabs above or the fast questions left. Please use them for navigation and keep the chat concise.
+                </p>
+            </div>
         </div>
         """, unsafe_allow_html=True)
         
         # FIXED: Quick prompts section with unique keys
+        st.markdown("""
+        <div class="quick-prompt-section">
+            <h3 class="quick-prompt-title">💡 Suggested Questions for Recruiters</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # FIXED: Create suggested prompts with unique keys
         suggested_prompts = [
             "Tell me about his predictive modeling achievements",
             "What advanced ML algorithms does he specialize in?",
             "Show me his time-series forecasting performance",
             "How does his 3.91 GPA compare in Georgia Tech's program?",
             "What makes him stand out for ML engineering roles?",
-            "Walk me through his Sandia Labs research partnership"
+            "Walk me through his Sandia Labs research partnership",
+            "Explain his real estate forecasting methodology and results",
+            "What's his sports analytics system architecture?",
+            "How experienced is he with TensorFlow and XGBoost?",
+            "Tell me about his research publication potential",
+            "Show me his quantifiable business impact metrics",
+            "What's his Python/R/SQL proficiency level?"
         ]
         
-        st.markdown("### 💡 Suggested Questions for Recruiters")
+        # FIXED: Create columns for the prompts with unique keys
         cols = st.columns(3)
         for i, prompt in enumerate(suggested_prompts):
             col_idx = i % 3
             with cols[col_idx]:
-                # Use unique key with timestamp to avoid duplicates
-                button_key = f"suggest_{i}_{len(st.session_state.messages)}"
-                if st.button(prompt, key=button_key, use_container_width=True):
+                # FIXED: Use unique key with timestamp
+                unique_key = f"suggest_{i}_{int(time.time()*1000) % 10000}"
+                if st.button(prompt, key=unique_key, use_container_width=True):
                     # Add to chat when clicked
                     st.session_state.messages.append({"role": "user", "content": prompt})
                     response = st.session_state.chatbot.get_response(prompt)
                     st.session_state.messages.append({"role": "assistant", "content": response})
                     st.rerun()
         
-        # Display chat messages
+        # Display chat messages FIRST
         if st.session_state.messages:
             for message in st.session_state.messages:
                 with st.chat_message(message["role"]):
                     st.markdown(message["content"])
             
-            # IMPORTANT: Auto-scroll AFTER displaying messages
+            # CRITICAL: Auto-scroll AFTER displaying all messages
             force_scroll_to_bottom()
         
-        # Chat input
-        if prompt := st.chat_input("💬 Ask about technical expertise..."):
-            # Add user message
+        # FIXED: Chat input AFTER messages
+        if prompt := st.chat_input("💬 Inquire about technical expertise, quantifiable results, or specific project achievements..."):
+            # Add user message first
             st.session_state.messages.append({"role": "user", "content": prompt})
             
-            # Generate and add response
-            with st.spinner("🧠 Analyzing..."):
+            # Generate response
+            with st.spinner("🧠 Analyzing technical credentials and performance metrics..."):
                 response = st.session_state.chatbot.get_response(prompt)
                 st.session_state.messages.append({"role": "assistant", "content": response})
             
-            # Rerun to show new messages and auto-scroll
+            # Rerun to show new messages and trigger auto-scroll
             st.rerun()
     
+    # Continue with other tabs...
     with tab2:
         # Enhanced Georgia Tech tab
         st.markdown('<div class="tab-content">', unsafe_allow_html=True)
@@ -1552,6 +1636,7 @@ def main():
                 <p>Intensive Curriculum</p>
             </div>
             """, unsafe_allow_html=True)
+     
         
         st.markdown('</div>', unsafe_allow_html=True)
     
