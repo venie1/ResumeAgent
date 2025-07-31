@@ -960,6 +960,7 @@ class ResumeData:
                 "📊 **Advanced Analytics:** Expert in ensemble methods, time-series forecasting, and statistical modeling techniques"
             ]
         }
+
 def main():
     """Enhanced main function focused on professional presentation"""
     
@@ -984,64 +985,6 @@ def main():
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Inter', 'Roboto', Arial, sans-serif;
         font-weight: 600;
-    }
-
-    /* Enhanced AI Assistant Section */
-    .ai-assistant-container {
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-        border: 2px solid #1976d2;
-        border-radius: 20px;
-        padding: 2rem;
-        margin: 1rem 0;
-        box-shadow: 0 8px 32px rgba(25, 118, 210, 0.15);
-        position: relative;
-    }
-    
-    .ai-assistant-header {
-        background: linear-gradient(135deg, #1976d2 0%, #2196f3 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        margin-bottom: 2rem;
-        text-align: center;
-        box-shadow: 0 4px 20px rgba(25, 118, 210, 0.3);
-    }
-    
-    .ai-assistant-header h2 {
-        margin: 0 0 0.5rem 0;
-        font-size: 2rem;
-        font-weight: 700;
-    }
-    
-    .ai-assistant-description {
-        background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
-        border-left: 4px solid #1976d2;
-        padding: 1.5rem;
-        border-radius: 12px;
-        margin-bottom: 2rem;
-        box-shadow: 0 2px 12px rgba(25, 118, 210, 0.08);
-    }
-    
-    .recruiter-note {
-        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-        border-left: 4px solid #ff9800;
-        padding: 1.2rem;
-        border-radius: 10px;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 2px 8px rgba(255, 152, 0, 0.1);
-    }
-    
-    /* Enhanced chat input styling */
-    .stChatInput > div > div > div > div {
-        border: 2px solid #1976d2 !important;
-        border-radius: 15px !important;
-        box-shadow: 0 4px 20px rgba(25, 118, 210, 0.15) !important;
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
-    }
-    
-    .stChatInput input::placeholder {
-        color: #1976d2 !important;
-        font-weight: 500 !important;
     }
 
     /* Enhanced chat visibility styling */
@@ -1246,18 +1189,17 @@ def main():
     </div>
     """, unsafe_allow_html=True)
 
-    # Initialize chatbot and active tab
+    # Initialize chatbot
     if 'chatbot' not in st.session_state:
         st.session_state.chatbot = ResumeAssistantChatbot()
         st.session_state.messages = []
-        st.session_state.active_tab = 0  # Default to AI Assistant tab
     
     # Enhanced Sidebar with navigation functionality
     with st.sidebar:
         st.markdown("""
         <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, #1976d2, #2196f3); color: white; border-radius: 10px; margin-bottom: 1rem;">
             <h3 style="margin: 0;">🎯 Quick Navigation</h3>
-            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Click sections to explore ↓</p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Click to ask in chat ↓</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -1267,8 +1209,6 @@ def main():
                 response = st.session_state.chatbot.get_section_response(section)
                 st.session_state.messages.append({"role": "user", "content": menu_text})
                 st.session_state.messages.append({"role": "assistant", "content": response})
-                # Switch to AI Assistant tab (first tab)
-                st.session_state.active_tab = 0
                 st.rerun() 
         
         st.markdown("---")
@@ -1292,95 +1232,49 @@ def main():
         st.metric("ML Model Accuracy", "90%", "+15% vs baseline")
         st.metric("Research Projects", "4", "Including Sandia Labs")
     
-    # Enhanced tab structure with all tabs accessible
-    tab_labels = [
-        "🤖 AI Assistant", 
+    # Enhanced tab structure
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+        "💬 AI Assistant", 
         "🎓 Georgia Tech Excellence",
         "🏭 Sandia Labs Research", 
         "🏠 Real Estate Advisor",
         "⚽ BetMax Analytics",
         "🚀 Project Portfolio",
         "📊 Skills & Performance"
-    ]
+    ])
     
-    # Create tabs
-    tabs = st.tabs(tab_labels)
-    
-    # Override tab selection if sidebar button was clicked
-    if 'active_tab' in st.session_state and st.session_state.active_tab == 0:
-        # Display a visual indicator that user should click on AI Assistant tab
-        if st.session_state.messages and len(st.session_state.messages) >= 2:
-            latest_message = st.session_state.messages[-1]
-            if latest_message["role"] == "assistant":
-                st.info("🤖 **New response added to AI Assistant chat!** Click the 'AI Assistant' tab above to see the answer.", icon="🎯")
-    
-    # Tab 1: AI Assistant - Enhanced Professional Design
-    with tabs[0]:
+    with tab1:
+        # Enhanced AI chat interface with professional recruiter note
         st.markdown("""
-        <div class="ai-assistant-container">
-            <div class="ai-assistant-header">
-                <h2>AI-Powered Career Analysis Platform</h2>
-                <p style="margin: 0; font-size: 1.1rem; font-weight: 400; opacity: 0.95;">
-                    Intelligent Technical Expertise Evaluation & Professional Assessment System
+        <div class="tab-content">
+            <h2 style="color: #1976d2;">💬 AI-Powered Resume Assistant</h2>
+            <p style="font-size: 1.1rem; color: #666; margin-bottom: 1rem; line-height: 1.5;">
+                Discover Petros's Data Science expertise, quantifiable achievements, technical competencies, and project outcomes. 
+                Receive detailed, recruiter-focused insights with specific performance metrics and demonstrated business impact.
+            </p>
+            <div style="background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%); 
+                        border-left: 4px solid #1976d2; 
+                        padding: 1.2rem; 
+                        border-radius: 10px; 
+                        margin-bottom: 1.5rem;
+                        box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);">
+                <p style="margin: 0; color: #1565c0; font-weight: 500; font-size: 0.95rem; line-height: 1.4;">
+                    📋 <strong>Note for Recruiters:</strong> This intelligent assistant is optimized for
+                    evaluating my CV. For optimal performance and token efficiency, please formulate concise, 
+                    targeted questions. Additional details are available through the structured navigation tabs above or the fast questions left. Please use them for navigation and keep the chat concise.
+                    Agent might be mistaken some times, for validation reflect the CV information and the tabs.
                 </p>
-            </div>
-            
-            <div class="ai-assistant-description">
-                <h3 style="color: #1976d2; margin: 0 0 1rem 0; font-size: 1.2rem;">
-                    🎯 Professional Expertise Discovery Platform
-                </h3>
-                <p style="font-size: 1.05rem; color: #555; margin-bottom: 1rem; line-height: 1.6;">
-                    Discover Petros's Data Science expertise, quantifiable achievements, technical competencies, and project outcomes. 
-                    Receive detailed, recruiter-focused insights with specific performance metrics and demonstrated business impact.
-                </p>
-                
-                <div class="recruiter-note">
-                    <h4 style="margin: 0 0 0.8rem 0; color: #e65100; font-size: 1rem;">
-                        📋 Note for Recruiters & Hiring Managers
-                    </h4>
-                    <p style="margin: 0; color: #bf360c; font-weight: 500; font-size: 0.95rem; line-height: 1.4;">
-                        This intelligent assistant is optimized for evaluating technical qualifications and career achievements. 
-                        For optimal performance and efficient analysis, please formulate concise, targeted questions about specific 
-                        competencies or project outcomes. Additional structured information is available through the navigation tabs above.
-                    </p>
-                </div>
-                
-                <div style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); 
-                            border-left: 4px solid #4caf50; 
-                            padding: 1.2rem; 
-                            border-radius: 10px; 
-                            margin-top: 1rem;
-                            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);">
-                    <h4 style="margin: 0 0 0.8rem 0; color: #2e7d32; font-size: 1rem;">
-                        💡 Suggested Professional Inquiries
-                    </h4>
-                    <ul style="margin: 0; color: #388e3c; font-size: 0.9rem; line-height: 1.5;">
-                        <li>"Analyze his machine learning model performance and business impact"</li>
-                        <li>"What are his quantifiable achievements in predictive analytics?"</li>
-                        <li>"How does his academic performance compare to industry standards?"</li>
-                        <li>"Evaluate his technical readiness for senior data science roles"</li>
-                    </ul>
-                </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
         
-        # Display chat messages with enhanced styling
-        if st.session_state.messages:
-            st.markdown("""
-            <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
-                        border-radius: 15px; padding: 1rem; margin: 1rem 0;
-                        border: 1px solid rgba(25, 118, 210, 0.1);">
-                <h4 style="color: #1976d2; margin: 0 0 0.5rem 0;">📋 Conversation History</h4>
-            </div>
-            """, unsafe_allow_html=True)
-            
+        # Display chat messages
         for message in st.session_state.messages:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
         
         # Enhanced chat input with professional placeholder
-        if prompt := st.chat_input("💬 Ask about technical expertise, quantifiable results, project achievements, or career qualifications..."):
+        if prompt := st.chat_input("💭 Inquire about technical expertise, quantifiable results, or specific project achievements..."):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
                 st.markdown(prompt)
@@ -1391,8 +1285,7 @@ def main():
                     st.markdown(response)
                     st.session_state.messages.append({"role": "assistant", "content": response})
     
-    # Tab 2: Georgia Tech Excellence  
-    with tabs[1]:
+    with tab2:
         # Enhanced Georgia Tech tab
         st.markdown('<div class="tab-content">', unsafe_allow_html=True)
         GeorgaTechShowcase.display_program_showcase()
@@ -1426,8 +1319,7 @@ def main():
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # Tab 3: Sandia Labs Research
-    with tabs[2]:
+    with tab3:
         # Enhanced Sandia Labs Research tab
         st.markdown("""
         <div class="tab-content">
@@ -1443,6 +1335,178 @@ def main():
                 <h2>🏭 Sandia National Laboratories</h2>
                 <h3>Elite Research Partnership - Predictive Maintenance AI</h3>
                 <h4>Behavioral Analysis & Failure Detection Systems</h4>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("### 🔬 Research Excellence & Innovation")
+            st.markdown("""
+            **Elite Partnership Status:**
+            • Prestigious collaboration between Georgia Tech and Sandia National Laboratories
+            • Focus on AI-driven failure detection for critical infrastructure
+            • SCANIA truck dataset analysis with 1.1M+ data points
+            • Research publication potential with national laboratory scientists
+
+            **Technical Innovation:**
+            • Pioneered behavioral vs. technical failure analysis methodology
+            • Advanced psychological variables investigation in mechanical failures
+            • Preventive training recommendations through behavioral insights
+            • pandas, NumPy, matplotlib, seaborn,scikit-learn (pipelines, imputation, metrics), XGBoost,Bootstrap up‑sampling, cost‑sensitive thresholding,Custom pipeline classes to prevent data leakage; fixed random seeds
+            """)
+            
+            st.markdown("### 📊 Quantifiable Research Impact")
+            col1a, col1b = st.columns(2)
+            with col1a:
+                st.metric("ROC-AUC Score", "0.732", "+15% vs baseline")
+                st.metric("Data Scale", "1.1M+", "data points")
+            with col1b:
+                st.metric("Cost Reduction", "20%", "potential savings")
+                st.metric("Features Engineered", "533", "behavioral + technical")
+        
+        with col2:
+            st.markdown("### 🎯 Business & Academic Impact")
+            st.markdown("""
+            **Real-World Applications:**
+            • Targeted driver training programs based on behavioral analysis
+            • Reduced safety incidents through predictive interventions
+            • Operational cost optimization via predictive maintenance
+            • Enhanced equipment reliability and performance protocols
+
+            **Academic & Research Excellence:**
+            • Partnership with premier national research institution
+            • Potential co-authored publication with Sandia scientists
+            • Interdisciplinary approach combining psychology and engineering
+            • Advanced statistical and machine learning methodologies
+            """)
+            
+            st.markdown("### 🔗 Research Documentation")
+            st.markdown("""
+            **Available Resources:**
+            • [GitHub Repository](https://github.com/venie1/Predictive-Maintenance-Behavioral-vs.-Technical-Analysis-of-Truck-Failures)
+            • Comprehensive technical report and methodology
+            • Statistical analysis and model performance metrics
+            • Complete data preprocessing and feature engineering pipelines
+
+            **Technical Deliverables:**
+            • Production-ready ML models with ensemble methods
+            • Real-time processing capabilities (<100ms latency)
+            • Behavioral pattern analysis algorithms
+            • Cost-benefit analysis and ROI projections
+            """)
+    
+    with tab4:
+        # Real Estate Advisor dedicated section
+        st.markdown("""
+        <div class="tab-content">
+            <div style="
+                background: linear-gradient(135deg, #16a085 0%, #2ecc71 100%);
+                color: white;
+                padding: 2rem;
+                border-radius: 15px;
+                margin: 1rem 0;
+                text-align: center;
+                box-shadow: 0 8px 25px rgba(22, 160, 133, 0.3);
+            ">
+                <h2>🏠 RealEstateAdvisor Platform</h2>
+                <h3>Advanced Predictive Analytics for Real Estate Markets</h3>
+                <h4>6% MAPE Accuracy | 12-15% Portfolio Optimization</h4>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("### 🎯 Project Overview & Business Impact")
+            st.markdown("""
+            **Revolutionary Real Estate Forecasting:**
+            • End-to-end platform for city-level price prediction across multiple markets
+            • Integration of macroeconomic, demographic, and real estate market indicators
+            • Advanced time-series forecasting with multiple ML algorithms
+            • Production-ready deployment with interactive Power BI dashboards
+
+            **Exceptional Performance Metrics:**
+            • **6% MAPE** for 1-3 month forecasting horizons
+            • **7-10% MAPE** for 6-12 month long-term predictions
+            • **12-15% portfolio return uplift** demonstrated in backtesting simulations
+            • **80% automation** of data preprocessing and feature engineering pipelines
+            """)
+            
+            st.markdown("### 📊 Technical Architecture & Innovation")
+            st.markdown("""
+            **Advanced Data Integration:**
+            • **Redfin API**: Real-time property listing and transaction data
+            • **FRED Economic Data**: Macroeconomic indicators and interest rates
+            • **Census Bureau**: Demographic and socioeconomic variables
+            • **Custom Feature Engineering**: 50+ lagged and rolling window features
+
+            **Multi-Algorithm Ensemble Approach:**
+            • **RidgeCV**: Regularized linear regression with cross-validation
+            • **Random Forest**: Non-linear pattern recognition and feature importance
+            • **XGBoost**: Gradient boosting for complex market dynamics
+            • **Prophet**: Time-series decomposition with seasonal adjustments
+            """)
+        
+        with col2:
+            st.markdown("### 🚀 Production Deployment & Business Value")
+            st.markdown("""
+            **Interactive Dashboard & Visualization:**
+            • **Power BI Integration**: Dynamic geographic mapping and trend analysis
+            • **Real-time Updates**: Automated data refresh and model retraining
+            • **User-friendly Interface**: Intuitive controls for market exploration
+            • **Export Capabilities**: Professional reports for stakeholder presentation
+
+            **Quantifiable Business Outcomes:**
+            • **Portfolio Optimization**: 12-15% improvement in investment returns
+            • **Risk Assessment**: Advanced uncertainty quantification and confidence intervals
+            • **Market Timing**: Optimal entry/exit point identification
+            • **Competitive Intelligence**: Comparative market analysis across cities
+            """)
+            
+            st.markdown("### 🛠️ Technical Excellence & Innovation")
+            st.markdown("""
+            **Advanced ML Engineering:**
+            • **Automated Preprocessing**: 80% reduction in manual data preparation
+            • **Cross-validation Framework**: Robust model validation with time-series splits
+            • **Feature Selection**: Statistical significance testing and correlation analysis
+            • **Model Interpretability**: SHAP values and feature importance analysis
+
+            **Open Source & Documentation:**
+            • **GitHub Repository**: [RealEstateAdvisor](https://github.com/venie1/RealEstateAdvisor)
+            • **Complete Codebase**: Production-ready Python implementation
+            • **Comprehensive Documentation**: Technical methodology and business applications
+            • **Reproducible Results**: Standardized evaluation metrics and benchmarks
+            """)
+            
+            # Performance metrics visualization
+            st.markdown("### 📈 Performance Benchmarks")
+            col2a, col2b, col2c = st.columns(3)
+            with col2a:
+                st.metric("Short-term MAPE", "6%", "1-3 months")
+            with col2b:
+                st.metric("Long-term MAPE", "7-10%", "6-12 months")
+            with col2c:
+                st.metric("Portfolio Uplift", "12-15%", "backtesting ROI")
+    
+    with tab5:
+        # Enhanced BetMax Sports Analytics section
+        st.markdown("""
+        <div class="tab-content">
+            <div style="
+                background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+                color: white;
+                padding: 2rem;
+                border-radius: 15px;
+                margin: 1rem 0;
+                text-align: center;
+                box-shadow: 0 8px 25px rgba(5, 150, 105, 0.3);
+            ">
+                <h2>⚽ BetMax Sports Analytics</h2>
+                <h3>Advanced Football Prediction System</h3>
+                <h4>4+ Years of Constant ROI</h4>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1514,8 +1578,7 @@ def main():
             • Educational resource for sports analytics community
             """)
     
-    # Tab 6: Project Portfolio
-    with tabs[5]:
+    with tab6:
         # Enhanced Project Portfolio Section
         st.markdown('<div class="tab-content">', unsafe_allow_html=True)
         st.markdown("### 🚀 Data Science & Machine Learning Project Portfolio")
@@ -1550,8 +1613,7 @@ def main():
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # Tab 7: Skills & Performance
-    with tabs[6]:
+    with tab7:
         # Enhanced Skills & Performance section
         st.markdown('<div class="tab-content">', unsafe_allow_html=True)
         st.markdown("### 📊 Performance Metrics & Technical Benchmarks")
@@ -1610,5 +1672,3 @@ def main():
 # Run the application
 if __name__ == "__main__":
     main()
-        
-        
