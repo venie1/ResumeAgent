@@ -1,5 +1,26 @@
 #  🤖 AI Resume Agent - Interactive Career Assistant
 
+
+  **Update, What's new:
+✅ RAG (Retrieval-Augmented Generation) 
+✅ Vector Embeddings with Sentence Transformers (Hugging Face ecosystem)
+✅ FAISS Vector Store for lightning-fast semantic search
+✅ LangChain Integration with RecursiveCharacterTextSplitter
+✅ Multi-Modal AI Architecture with OpenAI GPT-4 API
+✅ Cosine Similarity scoring for contextual relevance
+✅ Neural Semantic Search capabilities
+
+Complete Technical Stack:
+• Hugging Face Transformers (all-MiniLM-L6-v2 model) OpenAI GPT-4 for advanced LLM integration
+• Streamlit for production deployment
+• PyPDF2 for document processing
+  what does it mean? 
+  
+I can upload reports, resumes, articles, posts and with the new system my data is automatically, efficiently and cheaply read so that the agent can give a targeted clear answer. So my resume assistant 
+can tell you my information effectively always following the guidelines I have given him, and if I want to update the information I simply upload a new file. With embedding and semantic search i save
+space,money,time and processing power. 
+
+  
   https://resumeagent-5lxhhftrdnxwxgeys3dg2h.streamlit.app/
   
   https://www.python.org/downloads/
