@@ -459,23 +459,28 @@ class RAGEnhancedSystem:
     def generate_rag_enhanced_context(self, query, user_input):
         """🌐 Generate enhanced context using RAG for improved AI responses"""
         if not RAG_AVAILABLE:
-            return ""
+            return "", []  # Return context and retrieved_contexts for debugging
         
         retrieved_contexts = self.retrieve_context(query, top_k=3)
         
         if not retrieved_contexts:
-            return ""
+            return "", []  # Return empty context and empty list
         
-        # Build enhanced context prompt
+        # Build enhanced context prompt with clear RAG instructions
         context_prompt = "\n🧠 **NEURAL SEMANTIC CONTEXT** (Retrieved via RAG):\n"
         for ctx in retrieved_contexts:
             context_prompt += f"📊 Source: {ctx['metadata']['source']} (Similarity: {ctx['similarity_score']:.3f})\n"
             context_prompt += f"🎯 Context: {ctx['text']}\n\n"
         
         context_prompt += "⚡ Use this contextually relevant information to provide enhanced, accurate responses about Petros Venieris.\n"
-        context_prompt += "🎯 Maintain all original agent guidelines while leveraging this semantic context.\n\n"
+        context_prompt += "🎯 Maintain all original agent guidelines while leveraging this semantic context.\n"
+        context_prompt += "🔍 IMPORTANT: Add this exact footer to your response to show RAG was used:\n"
+        context_prompt += "---\n🧠 **RAG-Enhanced Response** | Retrieved {num_contexts} relevant contexts with avg similarity {avg_similarity:.3f}\n\n".format(
+            num_contexts=len(retrieved_contexts), 
+            avg_similarity=sum(ctx['similarity_score'] for ctx in retrieved_contexts) / len(retrieved_contexts)
+        )
         
-        return context_prompt
+        return context_prompt, retrieved_contexts
 
 class IntelligentResponseSystem:
     """Handles chat responses and keyword matching"""
@@ -699,8 +704,9 @@ class IntelligentResponseSystem:
                 resume_context += system_addition
             
             # 🧠 RAG ENHANCEMENT: Add neural semantic context if enabled
+            rag_retrieved_contexts = []
             if self.config.enable_rag and self.rag_system:
-                rag_context = self.rag_system.generate_rag_enhanced_context(user_input, user_input)
+                rag_context, rag_retrieved_contexts = self.rag_system.generate_rag_enhanced_context(user_input, user_input)
                 if rag_context:
                     resume_context += rag_context
             
@@ -725,7 +731,17 @@ class IntelligentResponseSystem:
                 frequency_penalty=0.1
             )
             
-            return response.choices[0].message.content.strip()
+            # Store RAG retrieval info for debug display
+            if rag_retrieved_contexts:
+                st.session_state.last_rag_retrieval = rag_retrieved_contexts
+            
+            response_content = response.choices[0].message.content.strip()
+            
+            # Add visual RAG indicator if contexts were retrieved
+            if rag_retrieved_contexts:
+                response_content += f"\n\n---\n🧠 **RAG-Enhanced Response** | Retrieved {len(rag_retrieved_contexts)} contexts | Avg similarity: {sum(ctx['similarity_score'] for ctx in rag_retrieved_contexts) / len(rag_retrieved_contexts):.3f}"
+            
+            return response_content
             
         except Exception as e:
             print(f"OpenAI API error: {e}")
@@ -2649,6 +2665,27 @@ def main():
         else:
             st.info("🧠 RAG features require: `pip install sentence-transformers faiss-cpu langchain PyPDF2 chromadb`")
         
+        # 🔍 RAG Debug Information (when enabled)
+        if RAG_AVAILABLE and st.session_state.chatbot.config.enable_rag:
+            with st.expander("🔍 RAG Debug Info", expanded=False):
+                if hasattr(st.session_state.chatbot, 'rag_system') and st.session_state.chatbot.rag_system:
+                    if st.session_state.chatbot.rag_system.text_chunks:
+                        st.metric("Knowledge Base Size", f"{len(st.session_state.chatbot.rag_system.text_chunks)} chunks")
+                        st.metric("Vector Store Status", "✅ Ready" if st.session_state.chatbot.rag_system.vector_store else "❌ Not Ready")
+                        
+                        # Show last retrieval info if available
+                        if hasattr(st.session_state, 'last_rag_retrieval') and st.session_state.last_rag_retrieval:
+                            st.subheader("🎯 Last Semantic Retrieval:")
+                            for i, ctx in enumerate(st.session_state.last_rag_retrieval):
+                                st.write(f"**#{i+1}** - Similarity: {ctx['similarity_score']:.3f}")
+                                st.write(f"📁 Source: `{ctx['metadata']['source']}`")
+                                st.write(f"📝 Context: {ctx['text'][:150]}...")
+                                st.write("---")
+                    else:
+                        st.warning("⚠️ Knowledge base is empty")
+                else:
+                    st.warning("⚠️ RAG system not initialized")
+        
         if st.button("🗑️ Clear Chat History", key="clear_chat_sidebar", use_container_width=True):
             st.session_state.messages = []
             st.session_state.chatbot.conversation_history = []
@@ -2801,6 +2838,13 @@ def main():
                     st.query_params["tab"] = "0"
                     st.session_state.force_ai_tab = True
                     st.rerun()
+        
+        # 🧠 RAG Status Indicator (when enabled)
+        if RAG_AVAILABLE and st.session_state.chatbot.config.enable_rag:
+            if hasattr(st.session_state.chatbot, 'rag_system') and st.session_state.chatbot.rag_system:
+                st.success("🧠 **RAG Neural Search ACTIVE** - Responses enhanced with semantic context retrieval", icon="🚀")
+            else:
+                st.warning("🧠 **RAG Enabled** but system not ready - Check debug info in sidebar", icon="⚠️")
         
         # Display chat messages with enhanced styling
         if st.session_state.messages:
