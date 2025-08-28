@@ -17,7 +17,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
-# RAG & AI Enhancement Imports (Experimental Feature)
+# RAG dependencies (optional)
 try:
     from sentence_transformers import SentenceTransformer
     import faiss
@@ -26,7 +26,6 @@ try:
     RAG_AVAILABLE = True
 except ImportError:
     RAG_AVAILABLE = False
-    print("⚠️ RAG dependencies not installed. RAG features disabled.")
 
 def force_scroll_to_bottom():
     """Auto-scroll to bottom of page for better chat experience"""
@@ -197,16 +196,21 @@ class ResumeData:
                 {
                     "name": "AI Resume Agent (AI Engineering/Open Source)",
                     "period": "2025 - Current (Personal Project, Open Source)",
-                    "description": "Interactive AI-powered resume assistant using OpenAI GPT-4 API integration. Features conversational AI, advanced prompt engineering, session management, and real-time chat interface. Built with Streamlit for deployment and demonstrates practical LLM application development.",
+                    "description": "Interactive AI-powered resume assistant using OpenAI GPT-4 API integration with advanced RAG (Retrieval-Augmented Generation) system. Features conversational AI, semantic search, vector embeddings, and neural information retrieval. Built with Streamlit for deployment and demonstrates state-of-the-art LLM application development with knowledge base augmentation.",
                     "achievements": [
                         "OpenAI GPT-4 API integration with custom prompt engineering",
+                        "Implemented RAG (Retrieval-Augmented Generation) system with FAISS vector store for semantic search",
+                        "Built vector embedding pipeline using Sentence Transformers (all-MiniLM-L6-v2)",
+                        "Integrated LangChain text splitter for intelligent document chunking",
+                        "Created neural information retrieval system with cosine similarity scoring",
+                        "PDF text extraction and processing using PyPDF2 for multi-modal knowledge base",
                         "Conversational AI interface with intelligent response system",
                         "Advanced session state management and real-time chat functionality",
                         "Professional UI/UX with interactive navigation and visualizations",
                         "Dynamic data visualization integration with Plotly charts",
                         "Streamlit deployment with responsive design and scroll automation"
                     ],
-                    "tech_stack": ["Python", "OpenAI API", "Streamlit", "Plotly", "Session Management", "LLM Integration"],
+                    "tech_stack": ["Python", "OpenAI API", "RAG (Retrieval-Augmented Generation)", "FAISS", "Sentence Transformers", "LangChain", "PyPDF2", "Vector Embeddings", "Semantic Search", "Streamlit", "Plotly", "Session Management", "LLM Integration"],
                     "github": "https://github.com/venie1/ResumeAgent",
                     "project_type": "Personal/AI Engineering (open source)"
                 },
@@ -274,7 +278,7 @@ class ResumeData:
             
             "skills": {
                 "Core Technical": [
-                    "Python", "R", "SQL", "Scikit-learn", "TensorFlow", "PyTorch", "XGBoost", "Prophet", "Selenium", "Flask", "Docker", "Git", "API Integration", "ETL Pipelines", "Data Visualization"
+                    "Python", "R", "SQL", "Scikit-learn", "TensorFlow", "PyTorch", "XGBoost", "Prophet", "Selenium", "Flask", "Docker", "Git", "API Integration", "ETL Pipelines", "Data Visualization", "RAG (Retrieval-Augmented Generation)", "LangChain", "Sentence Transformers", "FAISS", "Vector Embeddings"
                 ],
                 "Data Science & Analytics": [
                     "Time-Series Forecasting", "Predictive Modeling", "A/B Testing", "Hypothesis Testing", "Hyperparameter Tuning", "Feature Engineering", "Statistical Analysis", "Machine Learning", "Deep Learning"
@@ -288,8 +292,11 @@ class ResumeData:
                 "Database & Cloud": [
                     "PostgreSQL", "MySQL", "MongoDB", "AWS", "Data Warehousing"
                 ],
+                "AI & NLP Technologies": [
+                    "RAG (Retrieval-Augmented Generation)", "Vector Embeddings", "Semantic Search", "FAISS Vector Store", "Sentence Transformers", "LangChain Text Splitter", "Cosine Similarity", "Neural Information Retrieval", "PDF Text Extraction (PyPDF2)", "Multi-Modal AI Architecture"
+                ],
                 "Specialized Domains": [
-                    "Financial Analytics", "Sports Analytics", "Predictive Maintenance", "Real Estate Forecasting"
+                    "Financial Analytics", "Sports Analytics", "Predictive Maintenance", "Real Estate Forecasting", "Conversational AI Systems"
                 ]
             },
             
@@ -316,14 +323,10 @@ class ChatbotConfig:
         self.use_fallback = True
         self.openai_api_key = st.secrets["OPENAI_API_KEY"]
         self.enable_openai = True
-        self.enable_rag = False  # RAG experimental feature
+        self.enable_rag = False
 
 class RAGEnhancedSystem:
-    """🧠 Advanced RAG (Retrieval-Augmented Generation) System with Vector Embeddings & Semantic Search
-    
-    This experimental system leverages state-of-the-art neural information retrieval to enhance 
-    conversational AI responses with contextually relevant resume data through multi-modal AI architecture.
-    """
+    """Retrieval-Augmented Generation system for enhanced resume queries"""
     
     def __init__(self, resume_data, pdf_path="CV_Petros_Venieris.pdf"):
         self.resume_data = resume_data
@@ -339,30 +342,26 @@ class RAGEnhancedSystem:
             st.warning("⚠️ RAG system unavailable - install dependencies to enable neural semantic search")
     
     def _initialize_rag_system(self):
-        """Initialize the Neural Semantic Search & Vector Embedding System"""
+        """Initialize RAG components"""
         try:
-            # Load sentence transformer model for semantic embeddings
-            with st.spinner("🧠 Loading Neural Embedding Model..."):
+            with st.spinner("Loading embedding model..."):
                 self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
             
-            # Process and chunk resume data + PDF
             self._create_knowledge_base()
-            
-            # Build vector store with FAISS for efficient similarity search
             self._build_vector_store()
             
         except Exception as e:
             st.error(f"RAG System initialization failed: {str(e)}")
     
     def _create_knowledge_base(self):
-        """Create comprehensive knowledge base from resume data and PDF"""
+        """Process resume data and PDF into searchable chunks"""
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=500,
             chunk_overlap=50,
             separators=["\n\n", "\n", ". ", " ", ""]
         )
         
-        # Process structured resume data
+        # Process resume data structure
         for section, content in self.resume_data.data.items():
             if isinstance(content, dict):
                 for key, value in content.items():
@@ -394,7 +393,7 @@ class RAGEnhancedSystem:
                         self.text_chunks.append(chunk)
                         self.chunk_metadata.append({"source": f"resume_{section}", "type": "structured"})
         
-        # Process PDF if available
+        # Process PDF file
         if os.path.exists(self.pdf_path):
             try:
                 with open(self.pdf_path, 'rb') as file:
@@ -411,39 +410,30 @@ class RAGEnhancedSystem:
                 st.warning(f"Could not process PDF: {str(e)}")
     
     def _build_vector_store(self):
-        """Build FAISS vector store for efficient semantic similarity search"""
+        """Create FAISS index for similarity search"""
         if not self.text_chunks:
             return
         
-        with st.spinner("🔍 Building Vector Embeddings & Semantic Index..."):
-            # Generate embeddings for all text chunks
+        with st.spinner("Building vector index..."):
             embeddings = self.embedding_model.encode(self.text_chunks)
-            
-            # Initialize FAISS index for cosine similarity search
             dimension = embeddings.shape[1]
-            self.vector_store = faiss.IndexFlatIP(dimension)  # Inner product for cosine similarity
-            
-            # Normalize embeddings for cosine similarity
+            self.vector_store = faiss.IndexFlatIP(dimension)
             faiss.normalize_L2(embeddings)
             self.vector_store.add(embeddings.astype('float32'))
     
     def retrieve_context(self, query, top_k=3):
-        """🎯 Neural Semantic Retrieval - Find most relevant context using vector similarity"""
+        """Find most relevant resume sections for the query"""
         if not self.vector_store or not self.embedding_model:
             return []
         
         try:
-            # Encode query using the same embedding model
             query_embedding = self.embedding_model.encode([query])
             faiss.normalize_L2(query_embedding)
-            
-            # Perform semantic similarity search
             scores, indices = self.vector_store.search(query_embedding.astype('float32'), top_k)
             
-            # Retrieve relevant text chunks with metadata
             retrieved_contexts = []
             for i, (score, idx) in enumerate(zip(scores[0], indices[0])):
-                if idx < len(self.text_chunks) and score > 0.3:  # Similarity threshold
+                if idx < len(self.text_chunks) and score > 0.3:
                     retrieved_contexts.append({
                         'text': self.text_chunks[idx],
                         'metadata': self.chunk_metadata[idx],
@@ -457,28 +447,23 @@ class RAGEnhancedSystem:
             return []
     
     def generate_rag_enhanced_context(self, query, user_input):
-        """🌐 Generate enhanced context using RAG for improved AI responses"""
+        """Generate context from retrieved resume sections"""
         if not RAG_AVAILABLE:
-            return "", []  # Return context and retrieved_contexts for debugging
+            return "", []
         
         retrieved_contexts = self.retrieve_context(query, top_k=3)
         
         if not retrieved_contexts:
-            return "", []  # Return empty context and empty list
+            return "", []
         
-        # Build enhanced context prompt with clear RAG instructions
-        context_prompt = "\n🧠 **NEURAL SEMANTIC CONTEXT** (Retrieved via RAG):\n"
+        # Build context from retrieved sections
+        context_prompt = "\n**RETRIEVED CONTEXT**:\n"
         for ctx in retrieved_contexts:
             context_prompt += f"📊 Source: {ctx['metadata']['source']} (Similarity: {ctx['similarity_score']:.3f})\n"
             context_prompt += f"🎯 Context: {ctx['text']}\n\n"
         
-        context_prompt += "⚡ Use this contextually relevant information to provide enhanced, accurate responses about Petros Venieris.\n"
-        context_prompt += "🎯 Maintain all original agent guidelines while leveraging this semantic context.\n"
-        context_prompt += "🔍 IMPORTANT: Add this exact footer to your response to show RAG was used:\n"
-        context_prompt += "---\n🧠 **RAG-Enhanced Response** | Retrieved {num_contexts} relevant contexts with avg similarity {avg_similarity:.3f}\n\n".format(
-            num_contexts=len(retrieved_contexts), 
-            avg_similarity=sum(ctx['similarity_score'] for ctx in retrieved_contexts) / len(retrieved_contexts)
-        )
+        context_prompt += "Use this information to enhance your response about Petros.\n"
+        context_prompt += "Maintain all original guidelines.\n\n"
         
         return context_prompt, retrieved_contexts
 
@@ -491,7 +476,7 @@ class IntelligentResponseSystem:
         self.keywords = self.build_keyword_index()
         self.data_science_keywords = self.build_data_science_keywords()
         
-        # Initialize RAG system if enabled (always set attribute to avoid AttributeError)
+        # Initialize RAG system if enabled
         self.rag_system = None
         if config.enable_rag and RAG_AVAILABLE:
             try:
@@ -670,8 +655,10 @@ class IntelligentResponseSystem:
             Machine Learning Engineer, Data Scientist, AI Engineer, MLOps, Production ML Systems, Real-time Analytics,
             Time-Series Forecasting, Predictive Analytics, Statistical Modeling, Feature Engineering, Model Deployment,
             Data Visualization, Business Intelligence, ETL Pipelines, API Development, Conversational AI, 
-            Large Language Models, Prompt Engineering, Research & Development, Academic Excellence (Top 5%),
-            Team Leadership, Cross-functional Collaboration, Project Management, Mentorship, Problem-Solving. 
+            Large Language Models, Prompt Engineering, RAG (Retrieval-Augmented Generation), Vector Embeddings,
+            FAISS Vector Store, Sentence Transformers, LangChain, Semantic Search, Neural Information Retrieval,
+            Multi-Modal AI, Knowledge Base Systems, PDF Processing (PyPDF2), Cosine Similarity, Research & Development, 
+            Academic Excellence (Top 5%), Team Leadership, Cross-functional Collaboration, Project Management, Mentorship, Problem-Solving. 
 
             RESPONSE GUIDELINES:
             - Always highlight Petros's exceptional qualifications and achievements
@@ -703,7 +690,7 @@ class IntelligentResponseSystem:
                 """
                 resume_context += system_addition
             
-            # 🧠 RAG ENHANCEMENT: Add neural semantic context if enabled
+            # Add RAG context if enabled
             rag_retrieved_contexts = []
             if self.config.enable_rag and self.rag_system:
                 rag_context, rag_retrieved_contexts = self.rag_system.generate_rag_enhanced_context(user_input, user_input)
@@ -731,13 +718,13 @@ class IntelligentResponseSystem:
                 frequency_penalty=0.1
             )
             
-            # Store RAG retrieval info for debug display
+            # Store retrieval info for debug display
             if rag_retrieved_contexts:
                 st.session_state.last_rag_retrieval = rag_retrieved_contexts
             
             response_content = response.choices[0].message.content.strip()
             
-            # Add visual RAG indicator if contexts were retrieved
+            # Add RAG indicator to response
             if rag_retrieved_contexts:
                 response_content += f"\n\n---\n🧠 **RAG-Enhanced Response** | Retrieved {len(rag_retrieved_contexts)} contexts | Avg similarity: {sum(ctx['similarity_score'] for ctx in rag_retrieved_contexts) / len(rag_retrieved_contexts):.3f}"
             
@@ -2646,14 +2633,14 @@ def main():
             st.session_state.chatbot.config.enable_openai = use_ai
             st.rerun()
         
-        # 🧠 RAG Experimental Feature Toggle
+        # RAG Feature Toggle
         if RAG_AVAILABLE:
             use_rag = st.toggle("🧠 RAG Neural Search (Experimental)", 
                               value=st.session_state.chatbot.config.enable_rag,
-                              help="🚀 Enable Vector Embeddings & Semantic Retrieval for enhanced AI responses")
+                              help="Enable vector embeddings and semantic search for enhanced responses")
             if use_rag != st.session_state.chatbot.config.enable_rag:
                 st.session_state.chatbot.config.enable_rag = use_rag
-                # Reinitialize RAG system if toggled on
+                # Initialize RAG system if toggled on
                 if use_rag:
                     if not hasattr(st.session_state.chatbot, 'rag_system') or st.session_state.chatbot.rag_system is None:
                         try:
@@ -2665,26 +2652,52 @@ def main():
         else:
             st.info("🧠 RAG features require: `pip install sentence-transformers faiss-cpu langchain PyPDF2 chromadb`")
         
-        # 🔍 RAG Debug Information (when enabled)
+        # RAG Debug Information (when enabled)
         if RAG_AVAILABLE and st.session_state.chatbot.config.enable_rag:
             with st.expander("🔍 RAG Debug Info", expanded=False):
+                st.markdown("""
+                <style>
+                .debug-info {
+                    background-color: #2b2b2b;
+                    color: #ffffff;
+                    padding: 10px;
+                    border-radius: 5px;
+                    font-family: 'Consolas', 'Monaco', monospace;
+                }
+                .similarity-score {
+                    color: #00ff00;
+                    font-weight: bold;
+                }
+                .source-info {
+                    color: #ffaa00;
+                    font-style: italic;
+                }
+                </style>
+                """, unsafe_allow_html=True)
+                
                 if hasattr(st.session_state.chatbot, 'rag_system') and st.session_state.chatbot.rag_system:
                     if st.session_state.chatbot.rag_system.text_chunks:
-                        st.metric("Knowledge Base Size", f"{len(st.session_state.chatbot.rag_system.text_chunks)} chunks")
-                        st.metric("Vector Store Status", "✅ Ready" if st.session_state.chatbot.rag_system.vector_store else "❌ Not Ready")
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.metric("Knowledge Base", f"{len(st.session_state.chatbot.rag_system.text_chunks)} chunks")
+                        with col2:
+                            st.metric("Vector Store", "Ready ✅" if st.session_state.chatbot.rag_system.vector_store else "Not Ready ❌")
                         
                         # Show last retrieval info if available
                         if hasattr(st.session_state, 'last_rag_retrieval') and st.session_state.last_rag_retrieval:
-                            st.subheader("🎯 Last Semantic Retrieval:")
+                            st.markdown("**🎯 Last Semantic Retrieval:**")
                             for i, ctx in enumerate(st.session_state.last_rag_retrieval):
-                                st.write(f"**#{i+1}** - Similarity: {ctx['similarity_score']:.3f}")
-                                st.write(f"📁 Source: `{ctx['metadata']['source']}`")
-                                st.write(f"📝 Context: {ctx['text'][:150]}...")
-                                st.write("---")
+                                with st.container():
+                                    st.markdown(f'<div class="debug-info">', unsafe_allow_html=True)
+                                    st.markdown(f"**#{i+1}** - Similarity: <span class='similarity-score'>{ctx['similarity_score']:.3f}</span>", unsafe_allow_html=True)
+                                    st.markdown(f"📁 Source: <span class='source-info'>{ctx['metadata']['source']}</span>", unsafe_allow_html=True)
+                                    st.text(f"Context: {ctx['text'][:150]}...")
+                                    st.markdown('</div>', unsafe_allow_html=True)
+                                    st.markdown("---")
                     else:
-                        st.warning("⚠️ Knowledge base is empty")
+                        st.error("Knowledge base is empty")
                 else:
-                    st.warning("⚠️ RAG system not initialized")
+                    st.error("RAG system not initialized")
         
         if st.button("🗑️ Clear Chat History", key="clear_chat_sidebar", use_container_width=True):
             st.session_state.messages = []
@@ -2839,12 +2852,20 @@ def main():
                     st.session_state.force_ai_tab = True
                     st.rerun()
         
-        # 🧠 RAG Status Indicator (when enabled)
+        # RAG Status Indicator (when enabled)
         if RAG_AVAILABLE and st.session_state.chatbot.config.enable_rag:
             if hasattr(st.session_state.chatbot, 'rag_system') and st.session_state.chatbot.rag_system:
-                st.success("🧠 **RAG Neural Search ACTIVE** - Responses enhanced with semantic context retrieval", icon="🚀")
+                st.markdown("""
+                <div style="background-color: #1e3d59; color: white; padding: 10px; border-radius: 5px; border-left: 5px solid #00ff88;">
+                    <strong>🧠 RAG Neural Search ACTIVE</strong> - Responses enhanced with semantic context retrieval
+                </div>
+                """, unsafe_allow_html=True)
             else:
-                st.warning("🧠 **RAG Enabled** but system not ready - Check debug info in sidebar", icon="⚠️")
+                st.markdown("""
+                <div style="background-color: #5d4e37; color: white; padding: 10px; border-radius: 5px; border-left: 5px solid #ffaa00;">
+                    <strong>⚠️ RAG Enabled</strong> but system not ready - Check debug info in sidebar
+                </div>
+                """, unsafe_allow_html=True)
         
         # Display chat messages with enhanced styling
         if st.session_state.messages:
