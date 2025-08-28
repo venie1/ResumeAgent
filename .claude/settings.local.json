@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:gr.linkedin.com)",
+      "WebFetch(domain:gr.indeed.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

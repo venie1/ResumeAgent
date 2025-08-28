@@ -21,3 +21,10 @@ geopandas>=0.13.0
 
 # Utilities
 python-dotenv>=1.0.0
+
+# RAG & AI Enhancement Dependencies (Experimental Feature)
+sentence-transformers>=2.2.2
+faiss-cpu>=1.7.4
+langchain>=0.1.0
+PyPDF2>=3.0.1
+chromadb>=0.4.0

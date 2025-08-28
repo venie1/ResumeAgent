@@ -17,6 +17,17 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 
+# RAG & AI Enhancement Imports (Experimental Feature)
+try:
+    from sentence_transformers import SentenceTransformer
+    import faiss
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    import PyPDF2
+    RAG_AVAILABLE = True
+except ImportError:
+    RAG_AVAILABLE = False
+    print("⚠️ RAG dependencies not installed. RAG features disabled.")
+
 def force_scroll_to_bottom():
     """Auto-scroll to bottom of page for better chat experience"""
     js_code = """
@@ -284,13 +295,15 @@ class ResumeData:
             
             "technical_highlights": [
                 "🤖 **AI Engineering:** Built production AI Resume Agent with OpenAI GPT-4 API integration, conversational AI, and advanced prompt engineering",
+                "🧠 **RAG & Neural Retrieval:** Implemented state-of-the-art Retrieval-Augmented Generation with vector embeddings, semantic search, and multi-modal AI architecture",
                 "🎯 **90% Prediction Accuracy:** Achieved exceptional performance in live sports prediction systems across 1,000+ matches",
                 "🏭 **Sandia Labs Research:** Developing cutting-edge predictive maintenance algorithms with national laboratory scientists",
                 "💬 **LLM Applications:** Practical experience with large language model integration, intelligent response systems, and conversational AI development",
+                "🔍 **Vector Embeddings & FAISS:** Advanced semantic similarity search using sentence-transformers and efficient indexing for neural information retrieval",
                 "🎓 **Georgia Tech Excellence:** 3.91/4.0 GPA in world's #9 ranked Data Science program with advanced ML specialization",
                 "🔬 **Research Potential:** In discussions for co-authored publication with Sandia National Laboratories and Georgia Tech faculty",
                 "⚡ **Real-time Systems:** Built production-grade ML systems processing millions of data points with sub-second latency",
-                "🌐 **Full-Stack AI:** End-to-end AI capabilities from data processing to deployed conversational AI applications",
+                "🌐 **Full-Stack AI:** End-to-end AI capabilities from data processing to deployed conversational AI applications with knowledge base augmentation",
                 "📊 **Advanced Analytics:** Expert in ensemble methods, time-series forecasting, and statistical modeling techniques"
             ]
         }
@@ -303,6 +316,166 @@ class ChatbotConfig:
         self.use_fallback = True
         self.openai_api_key = st.secrets["OPENAI_API_KEY"]
         self.enable_openai = True
+        self.enable_rag = False  # RAG experimental feature
+
+class RAGEnhancedSystem:
+    """🧠 Advanced RAG (Retrieval-Augmented Generation) System with Vector Embeddings & Semantic Search
+    
+    This experimental system leverages state-of-the-art neural information retrieval to enhance 
+    conversational AI responses with contextually relevant resume data through multi-modal AI architecture.
+    """
+    
+    def __init__(self, resume_data, pdf_path="CV_Petros_Venieris.pdf"):
+        self.resume_data = resume_data
+        self.pdf_path = pdf_path
+        self.embedding_model = None
+        self.vector_store = None
+        self.text_chunks = []
+        self.chunk_metadata = []
+        
+        if RAG_AVAILABLE:
+            self._initialize_rag_system()
+        else:
+            st.warning("⚠️ RAG system unavailable - install dependencies to enable neural semantic search")
+    
+    def _initialize_rag_system(self):
+        """Initialize the Neural Semantic Search & Vector Embedding System"""
+        try:
+            # Load sentence transformer model for semantic embeddings
+            with st.spinner("🧠 Loading Neural Embedding Model..."):
+                self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+            
+            # Process and chunk resume data + PDF
+            self._create_knowledge_base()
+            
+            # Build vector store with FAISS for efficient similarity search
+            self._build_vector_store()
+            
+        except Exception as e:
+            st.error(f"RAG System initialization failed: {str(e)}")
+    
+    def _create_knowledge_base(self):
+        """Create comprehensive knowledge base from resume data and PDF"""
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=500,
+            chunk_overlap=50,
+            separators=["\n\n", "\n", ". ", " ", ""]
+        )
+        
+        # Process structured resume data
+        for section, content in self.resume_data.data.items():
+            if isinstance(content, dict):
+                for key, value in content.items():
+                    if isinstance(value, str):
+                        chunks = text_splitter.split_text(f"{key}: {value}")
+                        for chunk in chunks:
+                            self.text_chunks.append(chunk)
+                            self.chunk_metadata.append({"source": f"resume_{section}_{key}", "type": "structured"})
+                    elif isinstance(value, list):
+                        for item in value:
+                            if isinstance(item, str):
+                                chunks = text_splitter.split_text(f"{key}: {item}")
+                            elif isinstance(item, dict):
+                                item_text = " ".join([f"{k}: {v}" for k, v in item.items() if isinstance(v, (str, int, float))])
+                                chunks = text_splitter.split_text(item_text)
+                            
+                            for chunk in chunks:
+                                self.text_chunks.append(chunk)
+                                self.chunk_metadata.append({"source": f"resume_{section}_{key}", "type": "structured"})
+            elif isinstance(content, list):
+                for item in content:
+                    if isinstance(item, str):
+                        chunks = text_splitter.split_text(item)
+                    elif isinstance(item, dict):
+                        item_text = " ".join([f"{k}: {v}" for k, v in item.items() if isinstance(v, (str, int, float))])
+                        chunks = text_splitter.split_text(item_text)
+                    
+                    for chunk in chunks:
+                        self.text_chunks.append(chunk)
+                        self.chunk_metadata.append({"source": f"resume_{section}", "type": "structured"})
+        
+        # Process PDF if available
+        if os.path.exists(self.pdf_path):
+            try:
+                with open(self.pdf_path, 'rb') as file:
+                    pdf_reader = PyPDF2.PdfReader(file)
+                    pdf_text = ""
+                    for page in pdf_reader.pages:
+                        pdf_text += page.extract_text()
+                    
+                    pdf_chunks = text_splitter.split_text(pdf_text)
+                    for chunk in pdf_chunks:
+                        self.text_chunks.append(chunk)
+                        self.chunk_metadata.append({"source": "resume_pdf", "type": "pdf"})
+            except Exception as e:
+                st.warning(f"Could not process PDF: {str(e)}")
+    
+    def _build_vector_store(self):
+        """Build FAISS vector store for efficient semantic similarity search"""
+        if not self.text_chunks:
+            return
+        
+        with st.spinner("🔍 Building Vector Embeddings & Semantic Index..."):
+            # Generate embeddings for all text chunks
+            embeddings = self.embedding_model.encode(self.text_chunks)
+            
+            # Initialize FAISS index for cosine similarity search
+            dimension = embeddings.shape[1]
+            self.vector_store = faiss.IndexFlatIP(dimension)  # Inner product for cosine similarity
+            
+            # Normalize embeddings for cosine similarity
+            faiss.normalize_L2(embeddings)
+            self.vector_store.add(embeddings.astype('float32'))
+    
+    def retrieve_context(self, query, top_k=3):
+        """🎯 Neural Semantic Retrieval - Find most relevant context using vector similarity"""
+        if not self.vector_store or not self.embedding_model:
+            return []
+        
+        try:
+            # Encode query using the same embedding model
+            query_embedding = self.embedding_model.encode([query])
+            faiss.normalize_L2(query_embedding)
+            
+            # Perform semantic similarity search
+            scores, indices = self.vector_store.search(query_embedding.astype('float32'), top_k)
+            
+            # Retrieve relevant text chunks with metadata
+            retrieved_contexts = []
+            for i, (score, idx) in enumerate(zip(scores[0], indices[0])):
+                if idx < len(self.text_chunks) and score > 0.3:  # Similarity threshold
+                    retrieved_contexts.append({
+                        'text': self.text_chunks[idx],
+                        'metadata': self.chunk_metadata[idx],
+                        'similarity_score': float(score),
+                        'rank': i + 1
+                    })
+            
+            return retrieved_contexts
+        except Exception as e:
+            st.error(f"RAG retrieval error: {str(e)}")
+            return []
+    
+    def generate_rag_enhanced_context(self, query, user_input):
+        """🌐 Generate enhanced context using RAG for improved AI responses"""
+        if not RAG_AVAILABLE:
+            return ""
+        
+        retrieved_contexts = self.retrieve_context(query, top_k=3)
+        
+        if not retrieved_contexts:
+            return ""
+        
+        # Build enhanced context prompt
+        context_prompt = "\n🧠 **NEURAL SEMANTIC CONTEXT** (Retrieved via RAG):\n"
+        for ctx in retrieved_contexts:
+            context_prompt += f"📊 Source: {ctx['metadata']['source']} (Similarity: {ctx['similarity_score']:.3f})\n"
+            context_prompt += f"🎯 Context: {ctx['text']}\n\n"
+        
+        context_prompt += "⚡ Use this contextually relevant information to provide enhanced, accurate responses about Petros Venieris.\n"
+        context_prompt += "🎯 Maintain all original agent guidelines while leveraging this semantic context.\n\n"
+        
+        return context_prompt
 
 class IntelligentResponseSystem:
     """Handles chat responses and keyword matching"""
@@ -312,6 +485,12 @@ class IntelligentResponseSystem:
         self.config = config
         self.keywords = self.build_keyword_index()
         self.data_science_keywords = self.build_data_science_keywords()
+        
+        # Initialize RAG system if enabled
+        self.rag_system = None
+        if config.enable_rag and RAG_AVAILABLE:
+            self.rag_system = RAGEnhancedSystem(resume_data)
+        
         if config.enable_openai:
             openai.api_key = config.openai_api_key
         
@@ -320,8 +499,8 @@ class IntelligentResponseSystem:
         keywords = {
             'experience': ['experience', 'work', 'job', 'employment', 'career', 'professional', 'role', 'position', 'sandia', 'betmax', 'practicum', 'data scientist', 'machine learning engineer'],
             'education': ['education', 'degree', 'school', 'university', 'study', 'academic', 'learning', 'qualification', 'georgia tech', 'piraeus', 'analytics', 'masters', 'gpa'],
-            'projects': ['project', 'portfolio', 'work', 'development', 'built', 'created', 'application', 'system', 'real estate', 'covid', 'forecasting', 'prediction', 'trading', 'sports', 'ai resume agent', 'resume agent', 'chatbot', 'ai assistant', 'conversational ai', 'openai', 'gpt', 'llm'],
-            'skills': ['skills', 'technology', 'programming', 'language', 'tool', 'framework', 'expertise', 'proficiency', 'python', 'sql', 'machine learning', 'ml', 'ai', 'deep learning', 'openai api', 'gpt integration', 'llm', 'conversational ai', 'prompt engineering', 'streamlit'],
+            'projects': ['project', 'portfolio', 'work', 'development', 'built', 'created', 'application', 'system', 'real estate', 'covid', 'forecasting', 'prediction', 'trading', 'sports', 'ai resume agent', 'resume agent', 'chatbot', 'ai assistant', 'conversational ai', 'openai', 'gpt', 'llm', 'rag', 'vector embeddings', 'semantic search', 'neural retrieval'],
+            'skills': ['skills', 'technology', 'programming', 'language', 'tool', 'framework', 'expertise', 'proficiency', 'python', 'sql', 'machine learning', 'ml', 'ai', 'deep learning', 'openai api', 'gpt integration', 'llm', 'conversational ai', 'prompt engineering', 'streamlit', 'rag', 'retrieval augmented generation', 'vector embeddings', 'semantic search', 'faiss', 'sentence transformers', 'langchain', 'neural information retrieval'],
             'achievements': ['achievement', 'accuracy', 'performance', 'results', 'improvement', 'success', 'metrics', 'roi', 'impact'],
             'contact': ['contact', 'email', 'linkedin', 'github', 'reach', 'connect', 'information', 'phone'],
             'summary': ['about', 'summary', 'overview', 'background', 'profile', 'introduction', 'candidate']
@@ -514,6 +693,12 @@ class IntelligentResponseSystem:
                 Respond supportively but suggest direct contact: "While Petros's primary expertise is in Data Science and Machine Learning, I'd recommend contacting him directly at pgvenieris@outlook.com to discuss how his analytical skills and technical background might apply to this role."
                 """
                 resume_context += system_addition
+            
+            # 🧠 RAG ENHANCEMENT: Add neural semantic context if enabled
+            if self.config.enable_rag and self.rag_system:
+                rag_context = self.rag_system.generate_rag_enhanced_context(user_input, user_input)
+                if rag_context:
+                    resume_context += rag_context
             
             client = openai.OpenAI(api_key=self.config.openai_api_key)
             
@@ -2440,6 +2625,20 @@ def main():
         if use_ai != st.session_state.chatbot.config.enable_openai:
             st.session_state.chatbot.config.enable_openai = use_ai
             st.rerun()
+        
+        # 🧠 RAG Experimental Feature Toggle
+        if RAG_AVAILABLE:
+            use_rag = st.toggle("🧠 RAG Neural Search (Experimental)", 
+                              value=st.session_state.chatbot.config.enable_rag,
+                              help="🚀 Enable Vector Embeddings & Semantic Retrieval for enhanced AI responses")
+            if use_rag != st.session_state.chatbot.config.enable_rag:
+                st.session_state.chatbot.config.enable_rag = use_rag
+                # Reinitialize RAG system if toggled on
+                if use_rag and not st.session_state.chatbot.rag_system:
+                    st.session_state.chatbot.rag_system = RAGEnhancedSystem(st.session_state.chatbot.resume_data)
+                st.rerun()
+        else:
+            st.info("🧠 RAG features require: `pip install sentence-transformers faiss-cpu langchain PyPDF2 chromadb`")
         
         if st.button("🗑️ Clear Chat History", key="clear_chat_sidebar", use_container_width=True):
             st.session_state.messages = []
