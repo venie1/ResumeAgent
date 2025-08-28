@@ -486,10 +486,14 @@ class IntelligentResponseSystem:
         self.keywords = self.build_keyword_index()
         self.data_science_keywords = self.build_data_science_keywords()
         
-        # Initialize RAG system if enabled
+        # Initialize RAG system if enabled (always set attribute to avoid AttributeError)
         self.rag_system = None
         if config.enable_rag and RAG_AVAILABLE:
-            self.rag_system = RAGEnhancedSystem(resume_data)
+            try:
+                self.rag_system = RAGEnhancedSystem(resume_data)
+            except Exception as e:
+                st.error(f"RAG initialization failed: {str(e)}")
+                self.rag_system = None
         
         if config.enable_openai:
             openai.api_key = config.openai_api_key
@@ -2634,8 +2638,13 @@ def main():
             if use_rag != st.session_state.chatbot.config.enable_rag:
                 st.session_state.chatbot.config.enable_rag = use_rag
                 # Reinitialize RAG system if toggled on
-                if use_rag and not st.session_state.chatbot.rag_system:
-                    st.session_state.chatbot.rag_system = RAGEnhancedSystem(st.session_state.chatbot.resume_data)
+                if use_rag:
+                    if not hasattr(st.session_state.chatbot, 'rag_system') or st.session_state.chatbot.rag_system is None:
+                        try:
+                            st.session_state.chatbot.rag_system = RAGEnhancedSystem(st.session_state.chatbot.resume_data)
+                        except Exception as e:
+                            st.error(f"RAG initialization failed: {str(e)}")
+                            st.session_state.chatbot.rag_system = None
                 st.rerun()
         else:
             st.info("🧠 RAG features require: `pip install sentence-transformers faiss-cpu langchain PyPDF2 chromadb`")
