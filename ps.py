@@ -40,7 +40,7 @@ def force_scroll_to_bottom():
             });
             
             // Alternative scroll method
-            window.parent.document.documentElement.scrollTop = window.parent.document.documentElement.scrollHeight;
+            window.parent.document.documentElemen.scrollTop = window.parent.document.documentElement.scrollHeight;
             
             // Find chat section
             const chatSection = window.parent.document.getElementById('chat-section');
