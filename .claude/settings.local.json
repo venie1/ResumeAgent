@@ -3,7 +3,8 @@
     "allow": [
       "WebSearch",
       "WebFetch(domain:gr.linkedin.com)",
-      "WebFetch(domain:gr.indeed.com)"
+      "WebFetch(domain:gr.indeed.com)",
+      "WebFetch(domain:www.glassdoor.com)"
     ],
     "deny": [],
     "ask": []
